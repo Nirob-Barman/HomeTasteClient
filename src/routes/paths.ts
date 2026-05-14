@@ -1,0 +1,29 @@
+export const PATHS = {
+  HOME: "/",
+  LOGIN: "/login",
+  REGISTER: "/register",
+  ADMIN: {
+    ROOT: "/admin",
+    DASHBOARD: "/admin/dashboard",
+    USERS: "/admin/users",
+    MEALS: "/admin/meals",
+    ORDERS: "/admin/orders",
+    DELIVERIES: "/admin/deliveries",
+    ANALYTICS: "/admin/analytics",
+    SUPPORT: "/admin/support",
+  },
+  CUSTOMER: {
+    ROOT: "/customer",
+    DASHBOARD: "/customer/dashboard",
+    MEALS: "/customer/meals",
+    ORDERS: "/customer/orders",
+    ADDRESSES: "/customer/addresses",
+    LOYALTY: "/customer/loyalty",
+  },
+  DELIVERY: {
+    ROOT: "/delivery",
+    DASHBOARD: "/delivery/dashboard",
+    ASSIGNMENTS: "/delivery/assignments",
+  },
+  NOT_FOUND: "*",
+} as const;
