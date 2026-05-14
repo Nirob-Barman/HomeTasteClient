@@ -1,7 +1,10 @@
-import { Menu, LogOut, User } from "lucide-react";
+import { Menu, LogOut, User, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useLogoutMutation } from "@/features/auth/authApi";
 import { clearCredentials } from "@/features/auth/authSlice";
+import { USER_ROLES } from "@/constants/roles";
+import { PATHS } from "@/routes/paths";
 import { toast } from "sonner";
 
 interface TopbarProps {
@@ -10,7 +13,12 @@ interface TopbarProps {
 
 export function Topbar({ onMenuToggle }: TopbarProps) {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { user } = useAppSelector((s) => s.auth);
+  const cartCount = useAppSelector((s) =>
+    s.cart.items.reduce((sum, i) => sum + i.quantity, 0)
+  );
+  const isCustomer = user?.roles.includes(USER_ROLES.CUSTOMER);
   const [logout] = useLogoutMutation();
 
   async function handleLogout() {
@@ -33,6 +41,20 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
       </button>
 
       <div className="flex items-center gap-3">
+        {isCustomer && (
+          <button
+            onClick={() => navigate(PATHS.CUSTOMER.MEALS)}
+            className="relative rounded-md p-1.5 text-gray-500 hover:bg-gray-100"
+            title="Cart"
+          >
+            <ShoppingCart size={20} />
+            {cartCount > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white">
+                {cartCount > 9 ? "9+" : cartCount}
+              </span>
+            )}
+          </button>
+        )}
         <span className="text-sm text-gray-600">
           {user?.firstName} {user?.lastName}
         </span>

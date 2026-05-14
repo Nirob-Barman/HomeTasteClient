@@ -92,7 +92,7 @@ src/
 - [x] Support tickets
 
 ### Phase 3 — Customer Features
-- [ ] Browse meals (`GET /api/meals`)
+- [x] Browse meals (`GET /api/meals`)
 - [ ] Meal detail page
 - [ ] Place order (`POST /api/orders`)
 - [ ] My orders list + detail
