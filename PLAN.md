@@ -87,7 +87,7 @@ src/
 - [x] Assign / remove role from detail page
 - [x] Meals management (create, list, delete)
 - [x] Orders overview
-- [ ] Deliveries management + assign delivery
+- [x] Deliveries management + assign delivery
 - [ ] Analytics dashboard
 - [ ] Support tickets
 
