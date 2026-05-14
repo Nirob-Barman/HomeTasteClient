@@ -13,6 +13,7 @@ import {
   type TSupportTicket,
 } from "@/types/support";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const STATUS_FILTERS: { label: string; value: TTicketStatus | 0 }[] = [
   { label: "All", value: 0 },
@@ -56,6 +57,7 @@ const NEXT_STATUS: Partial<Record<TTicketStatus, TTicketStatus>> = {
 };
 
 export default function SupportPage() {
+  usePageTitle("Support Tickets");
   const [activeFilter, setActiveFilter] = useState<TTicketStatus | 0>(0);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [closingId, setClosingId] = useState<string | null>(null);

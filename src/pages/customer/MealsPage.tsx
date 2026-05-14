@@ -4,10 +4,12 @@ import { useGetMealsQuery, useGetCategoriesQuery } from "@/features/meals/mealsA
 import { addItem, updateQuantity } from "@/features/cart/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const PAGE_SIZE = 12;
 
 export default function CustomerMealsPage() {
+  usePageTitle("Browse Meals");
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((s) => s.cart.items);
 

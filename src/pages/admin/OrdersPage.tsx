@@ -14,6 +14,7 @@ import {
   type TOrderStatus,
 } from "@/types/order";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const PAGE_SIZE = 15;
 
@@ -33,6 +34,7 @@ function shortId(id: string) {
 }
 
 export default function OrdersPage() {
+  usePageTitle("Orders");
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<TOrderStatus | undefined>(undefined);
   const [cancelTarget, setCancelTarget] = useState<string | null>(null);

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useGetDashboardStatsQuery } from "@/features/analytics/analyticsApi";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 function fmt(n: number) {
   return n.toLocaleString("en-US", { maximumFractionDigits: 2 });
@@ -51,6 +52,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export default function AnalyticsPage() {
+  usePageTitle("Analytics");
   const { data, isLoading, isError, refetch, isFetching } = useGetDashboardStatsQuery();
   const stats = data?.data;
 

@@ -11,6 +11,7 @@ import {
   useGetCategoriesQuery,
 } from "@/features/meals/mealsApi";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const createMealSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -25,6 +26,7 @@ type CreateMealForm = z.infer<typeof createMealSchema>;
 const PAGE_SIZE = 10;
 
 export default function MealsPage() {
+  usePageTitle("Meals");
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");

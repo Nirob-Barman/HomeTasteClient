@@ -11,6 +11,7 @@ import { usePlaceOrderMutation } from "@/features/orders/ordersApi";
 import { useGetAddressesQuery, useCreateAddressMutation } from "@/features/address/addressApi";
 import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const addressSchema = z.object({
   label: z.string().optional(),
@@ -25,6 +26,7 @@ const addressSchema = z.object({
 type AddressForm = z.infer<typeof addressSchema>;
 
 export default function CheckoutPage() {
+  usePageTitle("Checkout");
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((s) => s.cart.items);

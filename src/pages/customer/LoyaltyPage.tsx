@@ -10,6 +10,7 @@ import {
   type TLoyaltyTransactionType,
 } from "@/types/loyalty";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const PAGE_SIZE = 20;
 
@@ -25,6 +26,7 @@ function formatDate(s: string | null) {
 const TIER_ORDER: TLoyaltyTier[] = [1, 2, 3, 4];
 
 export default function LoyaltyPage() {
+  usePageTitle("Loyalty Rewards");
   const [page, setPage] = useState(1);
 
   const { data: accountData, isLoading: loadingAccount } = useGetMyAccountQuery();

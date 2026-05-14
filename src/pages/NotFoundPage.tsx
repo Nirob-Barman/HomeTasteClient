@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { PATHS } from "@/routes/paths";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 export default function NotFoundPage() {
+  usePageTitle("404 Not Found");
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 text-center">
       <h1 className="text-6xl font-bold text-gray-800">404</h1>

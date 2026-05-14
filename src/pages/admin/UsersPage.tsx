@@ -9,6 +9,7 @@ import {
 } from "@/features/admin/adminApi";
 import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const ROLE_COLORS: Record<string, string> = {
   Admin: "bg-purple-100 text-purple-700",
@@ -17,6 +18,7 @@ const ROLE_COLORS: Record<string, string> = {
 };
 
 export default function UsersPage() {
+  usePageTitle("Users");
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");

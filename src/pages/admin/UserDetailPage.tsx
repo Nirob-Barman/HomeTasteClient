@@ -12,6 +12,7 @@ import {
 import { USER_ROLES, type TRole } from "@/constants/roles";
 import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const ALL_ROLES: TRole[] = [
   USER_ROLES.CUSTOMER,
@@ -35,6 +36,7 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
 }
 
 export default function UserDetailPage() {
+  usePageTitle("User Detail");
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
 

@@ -5,6 +5,7 @@ import { useGetMyOrdersQuery } from "@/features/orders/ordersApi";
 import { ORDER_STATUS_LABEL, ORDER_STATUS_COLOR, type TOrder } from "@/types/order";
 import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const PAGE_SIZE = 10;
 
@@ -169,6 +170,7 @@ function OrderRow({ order }: { order: TOrder }) {
 }
 
 export default function CustomerOrdersPage() {
+  usePageTitle("My Orders");
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
 

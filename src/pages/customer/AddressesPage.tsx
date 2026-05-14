@@ -13,6 +13,7 @@ import {
 } from "@/features/address/addressApi";
 import type { TAddress } from "@/types/address";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const addressSchema = z.object({
   label: z.string().optional(),
@@ -100,6 +101,7 @@ function AddressFormFields({
 }
 
 export default function AddressesPage() {
+  usePageTitle("Addresses");
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingAddress, setEditingAddress] = useState<TAddress | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);

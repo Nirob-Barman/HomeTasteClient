@@ -10,6 +10,7 @@ import {
   useAssignDeliveryMutation,
 } from "@/features/delivery/deliveryApi";
 import { cn } from "@/utils/cn";
+import { usePageTitle } from "@/utils/usePageTitle";
 
 const PAGE_SIZE = 15;
 
@@ -20,6 +21,7 @@ const assignSchema = z.object({
 type AssignForm = z.infer<typeof assignSchema>;
 
 export default function DeliveriesPage() {
+  usePageTitle("Deliveries");
   const [page, setPage] = useState(1);
   const [showAssignModal, setShowAssignModal] = useState(false);
 
