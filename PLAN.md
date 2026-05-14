@@ -97,7 +97,7 @@ src/
 - [x] Place order (`POST /api/orders`)
 - [x] My orders list + detail
 - [x] Address management
-- [ ] Loyalty rewards
+- [x] Loyalty rewards
 
 ### Phase 4 — Delivery Personnel Features
 - [ ] My assignments (`GET /api/delivery/my-assignments`)
