@@ -89,7 +89,7 @@ src/
 - [x] Orders overview
 - [x] Deliveries management + assign delivery
 - [x] Analytics dashboard
-- [ ] Support tickets
+- [x] Support tickets
 
 ### Phase 3 — Customer Features
 - [ ] Browse meals (`GET /api/meals`)
