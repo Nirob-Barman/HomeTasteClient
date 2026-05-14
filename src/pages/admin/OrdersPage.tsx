@@ -14,7 +14,7 @@ import {
   type TOrderStatus,
 } from "@/types/order";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const PAGE_SIZE = 15;
 

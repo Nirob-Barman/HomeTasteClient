@@ -11,7 +11,7 @@ import { usePlaceOrderMutation } from "@/features/orders/ordersApi";
 import { useGetAddressesQuery, useCreateAddressMutation } from "@/features/address/addressApi";
 import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const addressSchema = z.object({
   label: z.string().optional(),

@@ -8,7 +8,7 @@ import { useRegisterMutation } from "@/features/auth/authApi";
 import { useAppSelector } from "@/app/hooks";
 import { USER_ROLES } from "@/constants/roles";
 import { PATHS } from "@/routes/paths";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const schema = z.object({
   firstName: z.string().min(1, "First name is required"),

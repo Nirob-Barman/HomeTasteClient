@@ -10,7 +10,7 @@ import {
   useAssignDeliveryMutation,
 } from "@/features/delivery/deliveryApi";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const PAGE_SIZE = 15;
 

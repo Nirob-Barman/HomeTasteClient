@@ -1,4 +1,4 @@
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function AdminDashboard() {
   usePageTitle("Dashboard");

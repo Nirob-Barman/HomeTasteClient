@@ -13,7 +13,7 @@ import {
   type TSupportTicket,
 } from "@/types/support";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const STATUS_FILTERS: { label: string; value: TTicketStatus | 0 }[] = [
   { label: "All", value: 0 },

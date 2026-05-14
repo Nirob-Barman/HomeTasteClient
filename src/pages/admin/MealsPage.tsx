@@ -11,7 +11,7 @@ import {
   useGetCategoriesQuery,
 } from "@/features/meals/mealsApi";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const createMealSchema = z.object({
   name: z.string().min(1, "Name is required"),

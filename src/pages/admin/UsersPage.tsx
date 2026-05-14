@@ -9,7 +9,7 @@ import {
 } from "@/features/admin/adminApi";
 import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const ROLE_COLORS: Record<string, string> = {
   Admin: "bg-purple-100 text-purple-700",

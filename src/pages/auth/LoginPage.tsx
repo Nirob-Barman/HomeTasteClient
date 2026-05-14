@@ -9,7 +9,7 @@ import { useAppSelector } from "@/app/hooks";
 import { USER_ROLES } from "@/constants/roles";
 import { PATHS } from "@/routes/paths";
 import type { TRole } from "@/constants/roles";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const schema = z.object({
   email: z.string().email("Invalid email address"),

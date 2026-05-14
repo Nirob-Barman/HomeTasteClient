@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useGetDashboardStatsQuery } from "@/features/analytics/analyticsApi";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 function fmt(n: number) {
   return n.toLocaleString("en-US", { maximumFractionDigits: 2 });

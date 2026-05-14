@@ -13,7 +13,7 @@ import {
 } from "@/features/address/addressApi";
 import type { TAddress } from "@/types/address";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const addressSchema = z.object({
   label: z.string().optional(),

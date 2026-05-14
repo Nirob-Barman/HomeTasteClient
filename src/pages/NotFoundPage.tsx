@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { PATHS } from "@/routes/paths";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function NotFoundPage() {
   usePageTitle("404 Not Found");

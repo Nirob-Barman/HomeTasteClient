@@ -5,7 +5,7 @@ import { useGetMyOrdersQuery } from "@/features/orders/ordersApi";
 import { ORDER_STATUS_LABEL, ORDER_STATUS_COLOR, type TOrder } from "@/types/order";
 import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const PAGE_SIZE = 10;
 

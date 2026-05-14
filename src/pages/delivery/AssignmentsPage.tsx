@@ -4,7 +4,7 @@ import { Truck, MapPin, RefreshCw } from "lucide-react";
 import { useGetMyDeliveriesQuery, useUpdateDeliveryStatusMutation, useUpdateLocationMutation } from "@/features/delivery/deliveryApi";
 import { DELIVERY_STATUS, type TDeliveryStatus } from "@/types/delivery";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const STATUS_LABEL: Record<TDeliveryStatus, string> = {
   1: "Assigned",

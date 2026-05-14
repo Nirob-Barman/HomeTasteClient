@@ -12,7 +12,7 @@ import {
 import { USER_ROLES, type TRole } from "@/constants/roles";
 import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
-import { usePageTitle } from "@/utils/usePageTitle";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 const ALL_ROLES: TRole[] = [
   USER_ROLES.CUSTOMER,
