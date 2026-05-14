@@ -13,13 +13,14 @@ interface SidebarProps {
 
 export function Sidebar({ collapsed, onClose }: SidebarProps) {
   const { user } = useAppSelector((s) => s.auth);
-  const primaryRole =
-    user?.roles[0] ??
-    (user?.roles.includes(USER_ROLES.ADMIN)
-      ? USER_ROLES.ADMIN
-      : user?.roles.includes(USER_ROLES.CUSTOMER)
+  const roles = user?.roles ?? [];
+  const primaryRole = roles.includes(USER_ROLES.ADMIN)
+    ? USER_ROLES.ADMIN
+    : roles.includes(USER_ROLES.DELIVERY_PERSONNEL)
+      ? USER_ROLES.DELIVERY_PERSONNEL
+      : roles.includes(USER_ROLES.CUSTOMER)
         ? USER_ROLES.CUSTOMER
-        : USER_ROLES.DELIVERY_PERSONNEL);
+        : null;
 
   const items = primaryRole ? (menuConfig[primaryRole] ?? []) : [];
 

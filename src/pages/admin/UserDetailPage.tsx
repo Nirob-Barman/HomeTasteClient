@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, User, Mail, Phone, Calendar, Shield, ShieldOff, Plus, X } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, Calendar, Shield, ShieldOff, Plus, X, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import {
   useGetUserByIdQuery,
@@ -14,7 +14,6 @@ import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
 
 const ALL_ROLES: TRole[] = [
-  USER_ROLES.ADMIN,
   USER_ROLES.CUSTOMER,
   USER_ROLES.DELIVERY_PERSONNEL,
 ];
@@ -38,7 +37,9 @@ function InfoRow({ icon, label, value }: { icon: React.ReactNode; label: string;
 export default function UserDetailPage() {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
+
   const [showRoleSelect, setShowRoleSelect] = useState(false);
+  const [pendingRole, setPendingRole] = useState<TRole | null>(null);
 
   const { data, isLoading } = useGetUserByIdQuery(userId!, { skip: !userId });
   const [banUser, { isLoading: banning }] = useBanUserMutation();
@@ -48,6 +49,7 @@ export default function UserDetailPage() {
 
   const user = data?.data;
   const isAdmin = user?.roles.includes("Admin") ?? false;
+  const hasExistingRole = (user?.roles.filter((r) => r !== "Admin").length ?? 0) > 0;
   const assignableRoles = ALL_ROLES.filter((r) => !user?.roles.includes(r));
 
   async function handleBanToggle() {
@@ -65,14 +67,31 @@ export default function UserDetailPage() {
     }
   }
 
-  async function handleAssignRole(role: TRole) {
+  function requestRoleAssign(role: TRole) {
+    if (!user) return;
+    if (hasExistingRole) {
+      // Show replace confirmation
+      setPendingRole(role);
+      setShowRoleSelect(false);
+    } else {
+      doAssignRole(role);
+    }
+  }
+
+  async function doAssignRole(role: TRole) {
     if (!user) return;
     try {
+      // Remove all existing roles first (replace, not add)
+      for (const existing of user.roles) {
+        await removeRole({ userId: user.id, roleName: existing }).unwrap();
+      }
       await assignRole({ userId: user.id, roleName: role }).unwrap();
-      toast.success(`Role "${role}" assigned`);
+      toast.success(`Role changed to "${role}"`);
+      setPendingRole(null);
       setShowRoleSelect(false);
     } catch {
-      toast.error("Failed to assign role");
+      toast.error("Failed to change role");
+      setPendingRole(null);
     }
   }
 
@@ -119,15 +138,10 @@ export default function UserDetailPage() {
       {/* Profile card */}
       <div className="rounded-lg border border-gray-200 bg-white p-5">
         <div className="flex items-start justify-between gap-4">
-          {/* Avatar + name */}
           <div className="flex items-center gap-4">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500">
               {user.profileImageUrl ? (
-                <img
-                  src={user.profileImageUrl}
-                  alt=""
-                  className="h-14 w-14 rounded-full object-cover"
-                />
+                <img src={user.profileImageUrl} alt="" className="h-14 w-14 rounded-full object-cover" />
               ) : (
                 <User size={24} />
               )}
@@ -136,20 +150,15 @@ export default function UserDetailPage() {
               <h2 className="text-lg font-semibold text-gray-800">
                 {user.firstName} {user.lastName}
               </h2>
-              <span
-                className={cn(
-                  "mt-0.5 inline-block rounded-full px-2 py-0.5 text-xs font-medium",
-                  user.isLocked
-                    ? "bg-red-100 text-red-600"
-                    : "bg-emerald-100 text-emerald-600"
-                )}
-              >
+              <span className={cn(
+                "mt-0.5 inline-block rounded-full px-2 py-0.5 text-xs font-medium",
+                user.isLocked ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"
+              )}>
                 {user.isLocked ? "Banned" : "Active"}
               </span>
             </div>
           </div>
 
-          {/* Ban / Unban */}
           {!isAdmin && (
             <button
               onClick={handleBanToggle}
@@ -161,11 +170,7 @@ export default function UserDetailPage() {
                   : "bg-red-50 text-red-600 hover:bg-red-100"
               )}
             >
-              {user.isLocked ? (
-                <><ShieldOff size={14} /> Unban</>
-              ) : (
-                <><Shield size={14} /> Ban</>
-              )}
+              {user.isLocked ? <><ShieldOff size={14} /> Unban</> : <><Shield size={14} /> Ban</>}
             </button>
           )}
         </div>
@@ -184,39 +189,72 @@ export default function UserDetailPage() {
       {/* Roles card */}
       <div className="rounded-lg border border-gray-200 bg-white p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-gray-700">Roles</h3>
+          <h3 className="text-sm font-semibold text-gray-700">Role</h3>
           {assignableRoles.length > 0 && (
             <button
-              onClick={() => setShowRoleSelect((v) => !v)}
+              onClick={() => { setShowRoleSelect((v) => !v); setPendingRole(null); }}
               className="flex items-center gap-1 rounded-md bg-orange-50 px-2.5 py-1.5 text-xs font-medium text-orange-600 hover:bg-orange-100"
             >
-              <Plus size={13} /> Add Role
+              <Plus size={13} />
+              {hasExistingRole ? "Change Role" : "Assign Role"}
             </button>
           )}
         </div>
 
-        {/* Assign role dropdown */}
+        {/* Role picker */}
         {showRoleSelect && (
           <div className="mb-4 flex flex-wrap gap-2">
             {assignableRoles.map((role) => (
               <button
                 key={role}
-                onClick={() => handleAssignRole(role)}
-                disabled={assigning}
+                onClick={() => requestRoleAssign(role)}
+                disabled={assigning || removing}
                 className="rounded-md border border-dashed border-gray-300 px-3 py-1.5 text-xs text-gray-600 hover:border-orange-400 hover:text-orange-600 disabled:opacity-50"
               >
-                + {role}
+                {hasExistingRole ? `→ ${role}` : `+ ${role}`}
               </button>
             ))}
           </div>
         )}
 
+        {/* Replace confirmation */}
+        {pendingRole && (
+          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle size={16} className="mt-0.5 shrink-0 text-amber-500" />
+              <div className="flex-1 text-sm">
+                <p className="font-medium text-amber-800">Replace role?</p>
+                <p className="mt-0.5 text-amber-700">
+                  This user already has the role{" "}
+                  <strong>{user.roles.filter((r) => r !== "Admin").join(", ")}</strong>.
+                  Assigning <strong>{pendingRole}</strong> will replace it.
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 flex gap-2 justify-end">
+              <button
+                onClick={() => setPendingRole(null)}
+                className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => doAssignRole(pendingRole)}
+                disabled={assigning || removing}
+                className="rounded-md bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600 disabled:opacity-50"
+              >
+                {assigning || removing ? "Replacing…" : "Replace Role"}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Current roles */}
         <div className="flex flex-wrap gap-2">
-          {user.roles.length === 0 ? (
-            <span className="text-sm text-gray-400">No roles assigned</span>
+          {user.roles.filter((r) => r !== "Admin").length === 0 ? (
+            <span className="text-sm text-gray-400">No role assigned</span>
           ) : (
-            user.roles.map((role) => (
+            user.roles.filter((r) => r !== "Admin").map((role) => (
               <span
                 key={role}
                 className={cn(
@@ -225,16 +263,14 @@ export default function UserDetailPage() {
                 )}
               >
                 {role}
-                {role !== "Admin" && (
-                  <button
-                    onClick={() => handleRemoveRole(role as TRole)}
-                    disabled={removing}
-                    className="rounded-full hover:text-red-500 disabled:opacity-50"
-                    title={`Remove ${role}`}
-                  >
-                    <X size={11} />
-                  </button>
-                )}
+                <button
+                  onClick={() => handleRemoveRole(role as TRole)}
+                  disabled={removing}
+                  className="rounded-full hover:text-red-500 disabled:opacity-50"
+                  title={`Remove ${role}`}
+                >
+                  <X size={11} />
+                </button>
               </span>
             ))
           )}

@@ -30,7 +30,9 @@ export default function UsersPage() {
   const [banUser, { isLoading: banning }] = useBanUserMutation();
   const [unbanUser, { isLoading: unbanning }] = useUnbanUserMutation();
 
-  const users = data?.data?.data ?? [];
+  const users = (data?.data?.data ?? []).filter(
+    (u) => !(u.roles ?? []).some((r) => r.toLowerCase() === "admin")
+  );
   const meta = data?.data?.metaData;
 
   function handleSearch(e: React.FormEvent) {
