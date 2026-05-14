@@ -88,7 +88,7 @@ src/
 - [x] Meals management (create, list, delete)
 - [x] Orders overview
 - [x] Deliveries management + assign delivery
-- [ ] Analytics dashboard
+- [x] Analytics dashboard
 - [ ] Support tickets
 
 ### Phase 3 — Customer Features
