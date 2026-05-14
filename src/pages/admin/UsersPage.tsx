@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Search, ChevronLeft, ChevronRight, Shield, ShieldOff, User } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, ChevronLeft, ChevronRight, Shield, ShieldOff, User, Eye } from "lucide-react";
 import { toast } from "sonner";
 import {
   useGetUsersQuery,
   useBanUserMutation,
   useUnbanUserMutation,
 } from "@/features/admin/adminApi";
+import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
 
 const ROLE_COLORS: Record<string, string> = {
@@ -191,7 +193,14 @@ export default function UsersPage() {
                   </td>
 
                   {/* Actions */}
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        to={PATHS.ADMIN.USER_DETAIL.replace(":userId", user.id)}
+                        className="inline-flex items-center gap-1 rounded-md bg-gray-50 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100"
+                      >
+                        <Eye size={13} /> View
+                      </Link>
                     {user.roles.includes("Admin") ? (
                       <span className="text-xs text-gray-400">—</span>
                     ) : (
@@ -213,6 +222,7 @@ export default function UsersPage() {
                         )}
                       </button>
                     )}
+                    </div>
                   </td>
                 </tr>
               ))

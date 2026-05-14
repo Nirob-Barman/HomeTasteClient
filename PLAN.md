@@ -83,8 +83,8 @@ src/
 ### Phase 2 — Admin Features
 - [x] Users list page with search + pagination (`GET /api/admin/users`)
 - [x] Ban / Unban user inline from the list
-- [ ] User detail page
-- [ ] Assign / remove role
+- [x] User detail page with profile info
+- [x] Assign / remove role from detail page
 - [ ] Meals management (create, list)
 - [ ] Orders overview
 - [ ] Deliveries management + assign delivery
