@@ -96,7 +96,7 @@ src/
 - [ ] Meal detail page
 - [x] Place order (`POST /api/orders`)
 - [x] My orders list + detail
-- [ ] Address management
+- [x] Address management
 - [ ] Loyalty rewards
 
 ### Phase 4 — Delivery Personnel Features
