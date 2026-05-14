@@ -40,6 +40,19 @@ export const deliveryApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Delivery"],
     }),
+
+    getMyDeliveries: build.query<ApiResponse<TDeliveryAssignment[]>, void>({
+      query: () => "/api/delivery/my-deliveries",
+      providesTags: ["Delivery"],
+    }),
+
+    updateLocation: build.mutation<ApiResponse<TDeliveryPersonnel>, { id: string; latitude: number; longitude: number }>({
+      query: ({ id, ...body }) => ({
+        url: `/api/delivery/personnel/${id}/location`,
+        method: "PATCH",
+        body,
+      }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -50,4 +63,6 @@ export const {
   useAssignDeliveryMutation,
   useGetDeliveryByOrderQuery,
   useUpdateDeliveryStatusMutation,
+  useGetMyDeliveriesQuery,
+  useUpdateLocationMutation,
 } = deliveryApi;

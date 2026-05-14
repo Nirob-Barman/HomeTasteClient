@@ -100,9 +100,9 @@ src/
 - [x] Loyalty rewards
 
 ### Phase 4 — Delivery Personnel Features
-- [ ] My assignments (`GET /api/delivery/my-assignments`)
-- [ ] Update delivery status
-- [ ] GPS location update
+- [x] My assignments (`GET /api/delivery/my-deliveries`)
+- [x] Update delivery status
+- [x] GPS location update
 
 ### Phase 5 — Polish
 - [ ] Loading skeletons
