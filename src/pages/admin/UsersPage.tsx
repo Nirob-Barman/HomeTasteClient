@@ -192,23 +192,27 @@ export default function UsersPage() {
 
                   {/* Actions */}
                   <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => handleBan(user.id, user.isLocked)}
-                      disabled={banning || unbanning}
-                      title={user.isLocked ? "Unban user" : "Ban user"}
-                      className={cn(
-                        "inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors disabled:opacity-50",
-                        user.isLocked
-                          ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                          : "bg-red-50 text-red-600 hover:bg-red-100"
-                      )}
-                    >
-                      {user.isLocked ? (
-                        <><ShieldOff size={13} /> Unban</>
-                      ) : (
-                        <><Shield size={13} /> Ban</>
-                      )}
-                    </button>
+                    {user.roles.includes("Admin") ? (
+                      <span className="text-xs text-gray-400">—</span>
+                    ) : (
+                      <button
+                        onClick={() => handleBan(user.id, user.isLocked)}
+                        disabled={banning || unbanning}
+                        title={user.isLocked ? "Unban user" : "Ban user"}
+                        className={cn(
+                          "inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors disabled:opacity-50",
+                          user.isLocked
+                            ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
+                            : "bg-red-50 text-red-600 hover:bg-red-100"
+                        )}
+                      >
+                        {user.isLocked ? (
+                          <><ShieldOff size={13} /> Unban</>
+                        ) : (
+                          <><Shield size={13} /> Ban</>
+                        )}
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))
