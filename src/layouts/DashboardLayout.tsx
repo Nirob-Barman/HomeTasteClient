@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "@/components/shared/Sidebar";
 import { Topbar } from "@/components/shared/Topbar";
+import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { cn } from "@/utils/cn";
 
 export default function DashboardLayout() {
@@ -44,7 +45,9 @@ export default function DashboardLayout() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar onMenuToggle={toggleSidebar} />
         <main className="flex-1 overflow-y-auto">
-          <Outlet />
+          <ErrorBoundary>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
     </div>
