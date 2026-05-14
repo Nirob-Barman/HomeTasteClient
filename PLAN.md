@@ -86,7 +86,7 @@ src/
 - [x] User detail page with profile info
 - [x] Assign / remove role from detail page
 - [x] Meals management (create, list, delete)
-- [ ] Orders overview
+- [x] Orders overview
 - [ ] Deliveries management + assign delivery
 - [ ] Analytics dashboard
 - [ ] Support tickets
