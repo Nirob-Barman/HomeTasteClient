@@ -85,7 +85,7 @@ src/
 - [x] Ban / Unban user inline from the list
 - [x] User detail page with profile info
 - [x] Assign / remove role from detail page
-- [ ] Meals management (create, list)
+- [x] Meals management (create, list, delete)
 - [ ] Orders overview
 - [ ] Deliveries management + assign delivery
 - [ ] Analytics dashboard
