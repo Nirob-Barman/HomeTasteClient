@@ -11,6 +11,7 @@ import { PATHS } from "./paths";
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("@/pages/auth/RegisterPage"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const UsersPage = lazy(() => import("@/pages/admin/UsersPage"));
 const CustomerDashboard = lazy(
   () => import("@/pages/customer/CustomerDashboard")
 );
@@ -55,6 +56,10 @@ export const router = createBrowserRouter([
               {
                 path: PATHS.ADMIN.DASHBOARD,
                 element: <Wrap><AdminDashboard /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.USERS,
+                element: <Wrap><UsersPage /></Wrap>,
               },
             ],
           },

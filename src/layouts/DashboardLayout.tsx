@@ -8,6 +8,7 @@ export default function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
+
   function toggleSidebar() {
     if (window.innerWidth < 768) {
       setMobileOpen((prev) => !prev);
