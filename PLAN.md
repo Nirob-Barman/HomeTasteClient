@@ -95,7 +95,7 @@ src/
 - [x] Browse meals (`GET /api/meals`)
 - [ ] Meal detail page
 - [x] Place order (`POST /api/orders`)
-- [ ] My orders list + detail
+- [x] My orders list + detail
 - [ ] Address management
 - [ ] Loyalty rewards
 
@@ -121,6 +121,32 @@ src/
 4. **Do not modify HomeTaste API** — frontend-only changes unless explicitly agreed
 5. **Feature-based folders** — new features go inside `pages/<role>/` and `features/<feature>/`
 6. **Route paths** are centralized in `src/routes/paths.ts` — never hardcode strings
+
+---
+
+## State Management: Redux vs RTK Query
+
+### Redux slices (shared client state — no server round-trip needed)
+
+| Slice | Why Redux |
+|---|---|
+| `auth` (`features/auth/authSlice`) | Token + user profile shared across layout, topbar, route guards, re-auth middleware |
+| `cart` (`features/cart/cartSlice`) | Cart items shared between browse page, topbar badge, and checkout — no API involved |
+
+### RTK Query (server state — all other data)
+
+Everything else uses RTK Query cache via `useXxxQuery` / `useXxxMutation`. No Redux slice needed because data lives on the server and only one component tree reads it at a time.
+
+| API slice | Endpoints |
+|---|---|
+| `mealsApi` | getMeals, getMealById, createMeal, updateMeal, deleteMeal, getCategories |
+| `ordersApi` | getOrders, getMyOrders, getMyOrderById, placeOrder, updateOrderStatus, cancelOrder |
+| `deliveryApi` | getPersonnel, toggleAvailability, assignDelivery, getDeliveryByOrder, updateDeliveryStatus |
+| `analyticsApi` | getDashboardStats |
+| `supportApi` | getAllTickets, updateTicketStatus |
+| `addressApi` | getAddresses, createAddress, updateAddress, deleteAddress, setDefaultAddress |
+| `adminApi` | getUsers, getUserById, banUser, unbanUser, assignRole, removeRole |
+| `authApi` | login, register, me, logout, refreshToken |
 
 ---
 
