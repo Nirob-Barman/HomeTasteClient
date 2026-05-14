@@ -43,7 +43,7 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
       <div className="flex items-center gap-3">
         {isCustomer && (
           <button
-            onClick={() => navigate(PATHS.CUSTOMER.MEALS)}
+            onClick={() => navigate(PATHS.CUSTOMER.CHECKOUT)}
             className="relative rounded-md p-1.5 text-gray-500 hover:bg-gray-100"
             title="Cart"
           >

@@ -94,7 +94,7 @@ src/
 ### Phase 3 — Customer Features
 - [x] Browse meals (`GET /api/meals`)
 - [ ] Meal detail page
-- [ ] Place order (`POST /api/orders`)
+- [x] Place order (`POST /api/orders`)
 - [ ] My orders list + detail
 - [ ] Address management
 - [ ] Loyalty rewards

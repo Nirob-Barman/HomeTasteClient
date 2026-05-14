@@ -22,6 +22,7 @@ const CustomerDashboard = lazy(
   () => import("@/pages/customer/CustomerDashboard")
 );
 const CustomerMealsPage = lazy(() => import("@/pages/customer/MealsPage"));
+const CheckoutPage = lazy(() => import("@/pages/customer/CheckoutPage"));
 const DeliveryDashboard = lazy(
   () => import("@/pages/delivery/DeliveryDashboard")
 );
@@ -106,6 +107,10 @@ export const router = createBrowserRouter([
               {
                 path: PATHS.CUSTOMER.MEALS,
                 element: <Wrap><CustomerMealsPage /></Wrap>,
+              },
+              {
+                path: PATHS.CUSTOMER.CHECKOUT,
+                element: <Wrap><CheckoutPage /></Wrap>,
               },
             ],
           },

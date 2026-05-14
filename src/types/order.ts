@@ -41,6 +41,14 @@ export const NEXT_STATUS: Partial<Record<TOrderStatus, TOrderStatus>> = {
   5: 6,
 };
 
+export interface CreateOrderRequest {
+  addressId: string;
+  items: { mealId: string; quantity: number; specialInstructions?: string }[];
+  couponCode?: string;
+  pointsToRedeem: number;
+  notes?: string;
+}
+
 export interface TOrderItem {
   id: string;
   mealId: string;

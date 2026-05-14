@@ -17,6 +17,7 @@ export const PATHS = {
     ROOT: "/customer",
     DASHBOARD: "/customer/dashboard",
     MEALS: "/customer/meals",
+    CHECKOUT: "/customer/checkout",
     ORDERS: "/customer/orders",
     ADDRESSES: "/customer/addresses",
     LOYALTY: "/customer/loyalty",

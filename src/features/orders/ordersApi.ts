@@ -1,5 +1,5 @@
 import { baseApi } from "@/app/baseApi";
-import type { TOrder, TOrderStatus } from "@/types/order";
+import type { TOrder, TOrderStatus, CreateOrderRequest } from "@/types/order";
 import type { ApiResponse, PaginatedResponse } from "@/types/api";
 
 export interface GetOrdersParams {
@@ -37,6 +37,24 @@ export const ordersApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Order"],
     }),
+
+    placeOrder: build.mutation<ApiResponse<TOrder>, CreateOrderRequest>({
+      query: (body) => ({ url: "/api/order", method: "POST", body }),
+      invalidatesTags: ["Order"],
+    }),
+
+    getMyOrders: build.query<ApiResponse<PaginatedResponse<TOrder[]>>, { pageNumber?: number; pageSize?: number }>({
+      query: ({ pageNumber = 1, pageSize = 15 } = {}) => ({
+        url: "/api/order/my",
+        params: { pageNumber, pageSize },
+      }),
+      providesTags: ["Order"],
+    }),
+
+    getMyOrderById: build.query<ApiResponse<TOrder>, string>({
+      query: (id) => `/api/order/${id}`,
+      providesTags: (_r, _e, id) => [{ type: "Order", id }],
+    }),
   }),
   overrideExisting: false,
 });
@@ -45,4 +63,7 @@ export const {
   useGetOrdersQuery,
   useUpdateOrderStatusMutation,
   useCancelOrderMutation,
+  usePlaceOrderMutation,
+  useGetMyOrdersQuery,
+  useGetMyOrderByIdQuery,
 } = ordersApi;
