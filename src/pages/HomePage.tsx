@@ -8,17 +8,47 @@ import {
   Gift,
   MapPin,
   ArrowRight,
+  Star,
+  Users,
+  Award,
 } from "lucide-react";
 import { PATHS } from "@/routes/paths";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useAppSelector } from "@/app/hooks";
 import { USER_ROLES } from "@/constants/roles";
+import { useGetMealsQuery } from "@/features/meals/mealsApi";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 function dashboardPath(roles: string[]) {
   if (roles.includes(USER_ROLES.ADMIN)) return PATHS.ADMIN.DASHBOARD;
   if (roles.includes(USER_ROLES.DELIVERY_PERSONNEL)) return PATHS.DELIVERY.DASHBOARD;
   return PATHS.CUSTOMER.DASHBOARD;
 }
+
+const stats = [
+  { icon: ShoppingBag, value: "500+", label: "Meals Delivered" },
+  { icon: Users, value: "200+", label: "Happy Customers" },
+  { icon: Star, value: "4.8★", label: "Average Rating" },
+  { icon: Award, value: "100%", label: "Fresh Ingredients" },
+];
+
+const testimonials = [
+  {
+    name: "Sarah M.",
+    rating: 5,
+    text: "Honestly the best food delivery I've ever tried. Tastes exactly like homemade — because it is!",
+  },
+  {
+    name: "James K.",
+    rating: 5,
+    text: "Fast delivery, generous portions, and the loyalty points add up quickly. Highly recommend.",
+  },
+  {
+    name: "Priya R.",
+    rating: 5,
+    text: "I order at least three times a week. The variety is great and every meal is consistently delicious.",
+  },
+];
 
 const steps = [
   {
@@ -64,6 +94,8 @@ const features = [
 export default function HomePage() {
   usePageTitle("Home");
   const { isAuthenticated, user } = useAppSelector((s) => s.auth);
+  const { data: mealsData, isLoading: loadingMeals } = useGetMealsQuery({ pageNumber: 1, pageSize: 6 });
+  const featuredMeals = mealsData?.data?.data ?? [];
 
   return (
     <>
@@ -107,6 +139,21 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Stats strip */}
+      <section className="border-y border-gray-100 bg-white px-6 py-10">
+        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-6 sm:grid-cols-4">
+          {stats.map(({ icon: Icon, value, label }) => (
+            <div key={label} className="flex flex-col items-center gap-2 text-center">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50">
+                <Icon size={20} className="text-orange-500" />
+              </div>
+              <p className="text-2xl font-bold text-gray-800">{value}</p>
+              <p className="text-xs text-gray-500">{label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* How it works */}
       <section className="px-6 py-20">
         <div className="mx-auto max-w-4xl">
@@ -135,6 +182,72 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Featured Meals */}
+      <section className="px-6 py-20">
+        <div className="mx-auto max-w-5xl">
+          <div className="mb-10 flex items-end justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800">Featured Meals</h2>
+              <p className="mt-1 text-sm text-gray-500">Fresh picks from today's menu</p>
+            </div>
+            <Link
+              to={PATHS.LOGIN}
+              className="flex items-center gap-1 text-sm font-medium text-orange-500 hover:text-orange-600"
+            >
+              View all <ArrowRight size={14} />
+            </Link>
+          </div>
+          {loadingMeals ? (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-64 rounded-2xl" />
+              ))}
+            </div>
+          ) : featuredMeals.length === 0 ? (
+            <p className="text-center text-sm text-gray-400">No meals available right now.</p>
+          ) : (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {featuredMeals.map((meal) => (
+                <Link
+                  key={meal.id}
+                  to={PATHS.LOGIN}
+                  className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow"
+                >
+                  <div className="relative h-44 w-full overflow-hidden bg-orange-50">
+                    {meal.imageUrl ? (
+                      <img
+                        src={meal.imageUrl}
+                        alt={meal.name ?? ""}
+                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-5xl">🍽️</div>
+                    )}
+                    {meal.categoryName && (
+                      <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-xs font-medium text-orange-600 shadow-sm">
+                        {meal.categoryName}
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <p className="font-semibold text-gray-800 truncate">{meal.name ?? "—"}</p>
+                    {meal.description && (
+                      <p className="mt-0.5 text-xs text-gray-400 line-clamp-2">{meal.description}</p>
+                    )}
+                    <div className="mt-3 flex items-center justify-between">
+                      <span className="text-base font-bold text-orange-500">${meal.price.toFixed(2)}</span>
+                      <span className="rounded-lg bg-orange-500 px-3 py-1 text-xs font-semibold text-white group-hover:bg-orange-600 transition-colors">
+                        Order Now
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Why HomeTaste */}
       <section className="bg-gray-50 px-6 py-20">
         <div className="mx-auto max-w-4xl">
@@ -160,6 +273,58 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section className="px-6 py-20">
+        <div className="mx-auto max-w-4xl">
+          <h2 className="mb-10 text-center text-2xl font-bold text-gray-800">What Our Customers Say</h2>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            {testimonials.map(({ name, rating, text }) => (
+              <div key={name} className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div className="mb-3 flex items-center gap-0.5">
+                  {Array.from({ length: rating }).map((_, i) => (
+                    <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="text-sm text-gray-600 leading-relaxed">"{text}"</p>
+                <p className="mt-4 text-xs font-semibold text-gray-400">— {name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="mx-6 mb-20 overflow-hidden rounded-3xl bg-gradient-to-r from-orange-500 to-amber-500 px-8 py-14 text-center shadow-lg sm:mx-auto sm:max-w-4xl">
+        <h2 className="text-2xl font-bold text-white sm:text-3xl">Ready to eat well?</h2>
+        <p className="mt-2 text-sm text-orange-100">
+          Join hundreds of happy customers enjoying fresh home-cooked meals every day.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          {isAuthenticated ? (
+            <Link
+              to={dashboardPath(user?.roles ?? [])}
+              className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-orange-500 hover:bg-orange-50 transition-colors"
+            >
+              Go to Dashboard <ArrowRight size={16} />
+            </Link>
+          ) : (
+            <>
+              <Link
+                to={PATHS.REGISTER}
+                className="flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-semibold text-orange-500 hover:bg-orange-50 transition-colors"
+              >
+                Get Started Free <ArrowRight size={16} />
+              </Link>
+              <Link
+                to={PATHS.LOGIN}
+                className="rounded-xl border border-white/40 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
+              >
+                Sign In
+              </Link>
+            </>
+          )}
+        </div>
+      </section>
     </>
   );
 }
