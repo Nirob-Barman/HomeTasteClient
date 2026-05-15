@@ -22,6 +22,10 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
+// Shared promise so concurrent 401s share one refresh call instead of each
+// racing to revoke the single-use refresh token.
+let refreshPromise: Promise<{ accessToken: string; refreshToken: string } | null> | null = null;
+
 const baseQueryWithReauth: BaseQueryFn<
   string | FetchArgs,
   unknown,
@@ -30,26 +34,33 @@ const baseQueryWithReauth: BaseQueryFn<
   let result = await rawBaseQuery(args, api, extraOptions);
 
   if (result.error?.status === 401) {
-    const hasRefreshToken = !!(api.getState() as RootState).auth.refreshToken;
-    if (hasRefreshToken) {
-      const refreshResult = await rawBaseQuery(
-        { url: "/api/auth/refresh-token", method: "POST" },
-        api,
-        extraOptions
-      );
+    const { refreshToken } = (api.getState() as RootState).auth;
+    if (!refreshToken) {
+      api.dispatch(clearCredentials());
+      return result;
+    }
 
-      const data = refreshResult.data as ApiResponse<AuthResponse> | undefined;
-      if (data?.data) {
-        api.dispatch(
-          updateTokens({
-            accessToken: data.data.accessToken,
-            refreshToken: data.data.refreshToken,
-          })
-        );
-        result = await rawBaseQuery(args, api, extraOptions);
-      } else {
-        api.dispatch(clearCredentials());
-      }
+    if (!refreshPromise) {
+      // Send the refresh token in the body — cookie alone is unreliable
+      // across different schemes (http frontend → https API) in development.
+      refreshPromise = Promise.resolve(
+        rawBaseQuery(
+          { url: "/api/auth/refresh-token", method: "POST", body: { refreshToken } },
+          api,
+          extraOptions,
+        ),
+      ).then((r) => {
+        const data = (r.data as ApiResponse<AuthResponse> | undefined)?.data;
+        return data ? { accessToken: data.accessToken, refreshToken: data.refreshToken } : null;
+      }).finally(() => {
+        refreshPromise = null;
+      });
+    }
+
+    const tokens = await refreshPromise;
+    if (tokens) {
+      api.dispatch(updateTokens(tokens));
+      result = await rawBaseQuery(args, api, extraOptions);
     } else {
       api.dispatch(clearCredentials());
     }
