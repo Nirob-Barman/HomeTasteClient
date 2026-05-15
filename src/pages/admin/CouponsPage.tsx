@@ -107,14 +107,21 @@ export default function CouponsPage() {
     }
   }
 
-  async function handleDelete(coupon: TCoupon) {
-    if (!confirm(`Delete coupon "${coupon.code}"?`)) return;
-    try {
-      await deleteCoupon(coupon.id).unwrap();
-      toast.success("Coupon deleted");
-    } catch {
-      toast.error("Failed to delete coupon");
-    }
+  function handleDelete(coupon: TCoupon) {
+    toast(`Delete coupon "${coupon.code}"?`, {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            await deleteCoupon(coupon.id).unwrap();
+            toast.success("Coupon deleted");
+          } catch {
+            toast.error("Failed to delete coupon");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   async function handleToggle(coupon: TCoupon) {

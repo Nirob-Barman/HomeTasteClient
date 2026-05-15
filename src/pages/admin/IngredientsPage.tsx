@@ -93,14 +93,21 @@ export default function IngredientsPage() {
   const ingredients = data?.data?.data ?? [];
   const meta = data?.data?.metaData;
 
-  async function handleDelete(ing: TIngredient) {
-    if (!confirm(`Delete ingredient "${ing.name}"?`)) return;
-    try {
-      await deleteIngredient(ing.id).unwrap();
-      toast.success("Ingredient deleted");
-    } catch {
-      toast.error("Failed to delete ingredient");
-    }
+  function handleDelete(ing: TIngredient) {
+    toast(`Delete ingredient "${ing.name}"?`, {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            await deleteIngredient(ing.id).unwrap();
+            toast.success("Ingredient deleted");
+          } catch {
+            toast.error("Failed to delete ingredient");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   return (

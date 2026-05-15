@@ -80,14 +80,21 @@ export default function InventoryPage() {
     }
   }
 
-  async function handleDelete(item: TInventoryItem) {
-    if (!confirm(`Delete "${item.name}"?`)) return;
-    try {
-      await deleteItem(item.id).unwrap();
-      toast.success("Item deleted");
-    } catch {
-      toast.error("Failed to delete item");
-    }
+  function handleDelete(item: TInventoryItem) {
+    toast(`Delete "${item.name}"?`, {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            await deleteItem(item.id).unwrap();
+            toast.success("Item deleted");
+          } catch {
+            toast.error("Failed to delete item");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   return (

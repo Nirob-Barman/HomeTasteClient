@@ -44,14 +44,21 @@ export default function PaymentsPage() {
   const payments = data?.data?.data ?? [];
   const meta = data?.data?.metaData;
 
-  async function handleRefund(payment: TPaymentTransaction) {
-    if (!confirm(`Refund payment ${shortId(payment.id)} ($${payment.amount.toFixed(2)})?`)) return;
-    try {
-      await refundPayment({ id: payment.id }).unwrap();
-      toast.success("Payment refunded");
-    } catch {
-      toast.error("Failed to refund payment");
-    }
+  function handleRefund(payment: TPaymentTransaction) {
+    toast(`Refund payment ${shortId(payment.id)} ($${payment.amount.toFixed(2)})?`, {
+      action: {
+        label: "Refund",
+        onClick: async () => {
+          try {
+            await refundPayment({ id: payment.id }).unwrap();
+            toast.success("Payment refunded");
+          } catch {
+            toast.error("Failed to refund payment");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   return (

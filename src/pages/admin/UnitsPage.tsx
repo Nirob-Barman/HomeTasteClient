@@ -86,14 +86,21 @@ export default function UnitsPage() {
   const units = data?.data?.data ?? [];
   const meta = data?.data?.metaData;
 
-  async function handleDelete(unit: TUnit) {
-    if (!confirm(`Delete unit "${unit.name}"?`)) return;
-    try {
-      await softDelete(unit.id).unwrap();
-      toast.success("Unit deleted");
-    } catch {
-      toast.error("Failed to delete unit");
-    }
+  function handleDelete(unit: TUnit) {
+    toast(`Delete unit "${unit.name}"?`, {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            await softDelete(unit.id).unwrap();
+            toast.success("Unit deleted");
+          } catch {
+            toast.error("Failed to delete unit");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   return (

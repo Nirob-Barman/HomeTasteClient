@@ -468,14 +468,21 @@ export default function PaymentGatewayPage() {
     }
   }
 
-  async function handleDelete(gw: TPaymentGateway) {
-    if (!confirm(`Delete gateway "${gw.name}"? This cannot be undone.`)) return;
-    try {
-      await deleteGateway(gw.id).unwrap();
-      toast.success("Gateway deleted");
-    } catch {
-      toast.error("Failed to delete gateway");
-    }
+  function handleDelete(gw: TPaymentGateway) {
+    toast(`Delete gateway "${gw.name}"?`, {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            await deleteGateway(gw.id).unwrap();
+            toast.success("Gateway deleted");
+          } catch {
+            toast.error("Failed to delete gateway");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   function credentialSummary(gw: TPaymentGateway) {

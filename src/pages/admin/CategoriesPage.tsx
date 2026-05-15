@@ -82,14 +82,21 @@ export default function CategoriesPage() {
     }
   }
 
-  async function handleDelete(category: TMealCategory) {
-    if (!confirm(`Delete "${category.name}"? This cannot be undone.`)) return;
-    try {
-      await deleteCategory(category.id).unwrap();
-      toast.success("Category deleted");
-    } catch {
-      toast.error("Failed to delete category");
-    }
+  function handleDelete(category: TMealCategory) {
+    toast(`Delete "${category.name}"?`, {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            await deleteCategory(category.id).unwrap();
+            toast.success("Category deleted");
+          } catch {
+            toast.error("Failed to delete category");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   return (

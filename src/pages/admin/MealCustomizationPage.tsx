@@ -132,14 +132,21 @@ export default function MealCustomizationPage() {
   const { data, isLoading } = useGetCustomizationsByMealQuery(selectedMealId, { skip: !selectedMealId });
   const options = data?.data ?? [];
 
-  async function handleDelete(opt: TMealCustomization) {
-    if (!confirm(`Delete option "${opt.name}"?`)) return;
-    try {
-      await deleteOpt(opt.id).unwrap();
-      toast.success("Option deleted");
-    } catch {
-      toast.error("Failed to delete option");
-    }
+  function handleDelete(opt: TMealCustomization) {
+    toast(`Delete option "${opt.name}"?`, {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            await deleteOpt(opt.id).unwrap();
+            toast.success("Option deleted");
+          } catch {
+            toast.error("Failed to delete option");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   async function handleToggle(opt: TMealCustomization) {

@@ -124,14 +124,21 @@ export default function MealIngredientsPage() {
   const items = data?.data?.data ?? [];
   const meta = data?.data?.metaData;
 
-  async function handleDelete(item: TMealIngredient) {
-    if (!confirm(`Remove ${item.ingredientName} from ${item.mealName}?`)) return;
-    try {
-      await deleteItem(item.id).unwrap();
-      toast.success("Mapping removed");
-    } catch {
-      toast.error("Failed to remove mapping");
-    }
+  function handleDelete(item: TMealIngredient) {
+    toast(`Remove ${item.ingredientName} from ${item.mealName}?`, {
+      action: {
+        label: "Remove",
+        onClick: async () => {
+          try {
+            await deleteItem(item.id).unwrap();
+            toast.success("Mapping removed");
+          } catch {
+            toast.error("Failed to remove mapping");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   return (
