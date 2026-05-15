@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ShoppingBag, CreditCard } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ShoppingBag, CreditCard, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useGetMyOrdersQuery } from "@/features/orders/ordersApi";
 import { ORDER_STATUS, ORDER_STATUS_LABEL, ORDER_STATUS_COLOR, type TOrder } from "@/types/order";
 import { PATHS } from "@/routes/paths";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useAppSelector } from "@/app/hooks";
 
 const PAGE_SIZE = 10;
 
@@ -25,8 +27,35 @@ function shortId(id: string) {
 function OrderRow({ order }: { order: TOrder }) {
   const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const accessToken = useAppSelector((s) => s.auth.accessToken);
 
   const canPay = order.status === ORDER_STATUS.Pending || order.status === ORDER_STATUS.Confirmed;
+
+  async function handleDownloadInvoice(e: React.MouseEvent) {
+    e.stopPropagation();
+    setDownloading(true);
+    try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL ?? "https://localhost:7082";
+      const res = await fetch(`${baseUrl}/api/order/${order.id}/invoice`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!res.ok) throw new Error("Failed to download invoice");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invoice-${order.id.slice(0, 8).toUpperCase()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Could not download invoice");
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   return (
     <>
@@ -107,6 +136,12 @@ function OrderRow({ order }: { order: TOrder }) {
                   <span className="text-gray-500">Subtotal</span>
                   <span className="text-gray-700">${order.subTotal.toFixed(2)}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Delivery</span>
+                  <span className={order.deliveryFee === 0 ? "font-medium text-green-600" : "text-gray-700"}>
+                    {order.deliveryFee === 0 ? "Free" : `$${order.deliveryFee.toFixed(2)}`}
+                  </span>
+                </div>
                 {order.discountAmount > 0 && (
                   <div className="flex justify-between">
                     <span className="text-gray-500">Discount</span>
@@ -148,6 +183,17 @@ function OrderRow({ order }: { order: TOrder }) {
                   </div>
                 )}
               </div>
+            </div>
+
+            <div className="mt-3 flex justify-end">
+              <button
+                onClick={handleDownloadInvoice}
+                disabled={downloading}
+                className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:border-orange-300 hover:text-orange-600 disabled:opacity-50"
+              >
+                <Download size={12} />
+                {downloading ? "Downloading…" : "Download Invoice"}
+              </button>
             </div>
           </td>
         </tr>
