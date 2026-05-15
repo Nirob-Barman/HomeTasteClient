@@ -88,9 +88,6 @@ export default function ReviewsPage() {
   const [updateReview, { isLoading: isUpdating }] = useUpdateReviewMutation();
   const [deleteReview] = useDeleteReviewMutation();
 
-  const submitRating = useWatch({ control: submitForm.control, name: "rating" });
-  const editRating = useWatch({ control: editForm.control, name: "rating" });
-
   const reviews = reviewsData?.data ?? [];
   const meals = mealsData?.data?.data ?? [];
 
@@ -103,6 +100,9 @@ export default function ReviewsPage() {
     resolver: zodResolver(editSchema),
     defaultValues: { rating: 5, feedback: "" },
   });
+
+  const submitRating = useWatch({ control: submitForm.control, name: "rating" });
+  const editRating = useWatch({ control: editForm.control, name: "rating" });
 
   function openEdit(review: TReview) {
     editForm.reset({ rating: review.rating, feedback: review.feedback ?? "" });
