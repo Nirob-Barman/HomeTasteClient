@@ -6,6 +6,10 @@ export interface TMeal {
   imageUrl: string | null;
   categoryId: string;
   categoryName: string | null;
+  isAvailable: boolean;
+  preparationTime: number | null;
+  discountPrice: number | null;
+  calories: number | null;
 }
 
 export interface TMealCategory {

@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus, Minus, ShoppingCart, Star } from "lucide-react";
+import { ArrowLeft, Plus, Minus, ShoppingCart, Star, Clock, Flame } from "lucide-react";
 import { useGetMealByIdQuery } from "@/features/meals/mealsApi";
 import { useGetCustomizationsByMealQuery } from "@/features/mealCustomization/mealCustomizationApi";
 import { useGetMealReviewsQuery, useGetMealAverageRatingQuery } from "@/features/reviews/reviewsApi";
@@ -40,12 +40,12 @@ export default function MealDetailPage() {
 
   function handleAdd() {
     if (!meal) return;
-    dispatch(addItem({ mealId: meal.id, mealName: meal.name ?? "", price: meal.price, imageUrl: meal.imageUrl }));
+    dispatch(addItem({ mealId: meal.id, mealName: meal.name ?? "", price: meal.discountPrice ?? meal.price, imageUrl: meal.imageUrl }));
   }
 
   function handleIncrease() {
     if (!meal) return;
-    if (qty === 0) dispatch(addItem({ mealId: meal.id, mealName: meal.name ?? "", price: meal.price, imageUrl: meal.imageUrl }));
+    if (qty === 0) dispatch(addItem({ mealId: meal.id, mealName: meal.name ?? "", price: meal.discountPrice ?? meal.price, imageUrl: meal.imageUrl }));
     else dispatch(updateQuantity({ mealId: meal.id, quantity: qty + 1 }));
   }
 
@@ -115,12 +115,26 @@ export default function MealDetailPage() {
         <div className="space-y-2">
           <div className="flex items-start justify-between gap-3">
             <h1 className="text-2xl font-bold text-gray-800">{meal.name}</h1>
-            <span className="shrink-0 text-2xl font-bold text-orange-500">${meal.price.toFixed(2)}</span>
+            <div className="shrink-0 text-right">
+              {meal.discountPrice != null && meal.discountPrice < meal.price ? (
+                <>
+                  <p className="text-2xl font-bold text-orange-500">${meal.discountPrice.toFixed(2)}</p>
+                  <p className="text-sm text-gray-400 line-through">${meal.price.toFixed(2)}</p>
+                </>
+              ) : (
+                <p className="text-2xl font-bold text-orange-500">${meal.price.toFixed(2)}</p>
+              )}
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             {meal.categoryName && (
               <span className="inline-block rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-medium text-orange-700">
                 {meal.categoryName}
+              </span>
+            )}
+            {!meal.isAvailable && (
+              <span className="inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500">
+                Unavailable
               </span>
             )}
             {loadingRating ? (
@@ -132,6 +146,18 @@ export default function MealDetailPage() {
                 <span className="text-gray-400">({avgRating.totalReviews})</span>
               </div>
             ) : null}
+            {meal.preparationTime != null && (
+              <div className="flex items-center gap-1 text-xs text-gray-500">
+                <Clock size={12} />
+                ~{meal.preparationTime} min
+              </div>
+            )}
+            {meal.calories != null && (
+              <div className="flex items-center gap-1 text-xs text-gray-500">
+                <Flame size={12} />
+                {meal.calories} kcal
+              </div>
+            )}
           </div>
           {meal.description && (
             <p className="text-sm leading-relaxed text-gray-600">{meal.description}</p>
@@ -224,7 +250,14 @@ export default function MealDetailPage() {
       {/* Add to cart */}
       {meal && (
         <div className="sticky bottom-0 -mx-6 border-t border-gray-100 bg-white px-6 py-4">
-          {qty === 0 ? (
+          {!meal.isAvailable ? (
+            <button
+              disabled
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-100 py-3 text-sm font-semibold text-gray-400 cursor-not-allowed"
+            >
+              Currently Unavailable
+            </button>
+          ) : qty === 0 ? (
             <button
               onClick={handleAdd}
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-orange-500 py-3 text-sm font-semibold text-white hover:bg-orange-600"
@@ -234,7 +267,7 @@ export default function MealDetailPage() {
           ) : (
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-600">
-                ${(meal.price * qty).toFixed(2)} total
+                ${((meal.discountPrice ?? meal.price) * qty).toFixed(2)} total
               </span>
               <div className="flex items-center gap-3">
                 <button

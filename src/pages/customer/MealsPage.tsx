@@ -172,6 +172,13 @@ export default function CustomerMealsPage() {
                       {meal.categoryName}
                     </span>
                   )}
+                  {!meal.isAvailable && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                      <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-gray-700">
+                        Unavailable
+                      </span>
+                    </div>
+                  )}
                 </Link>
 
                 {/* Content */}
@@ -186,36 +193,45 @@ export default function CustomerMealsPage() {
                     <p className="mt-0.5 text-xs text-gray-500 line-clamp-2">{meal.description}</p>
                   )}
                   <div className="mt-auto flex items-center justify-between pt-3">
-                    <span className="text-base font-bold text-orange-500">
-                      ${meal.price.toFixed(2)}
-                    </span>
+                    <div>
+                      {meal.discountPrice != null && meal.discountPrice < meal.price ? (
+                        <>
+                          <span className="text-base font-bold text-orange-500">${meal.discountPrice.toFixed(2)}</span>
+                          <span className="ml-1.5 text-xs text-gray-400 line-through">${meal.price.toFixed(2)}</span>
+                        </>
+                      ) : (
+                        <span className="text-base font-bold text-orange-500">${meal.price.toFixed(2)}</span>
+                      )}
+                    </div>
 
-                    {qty === 0 ? (
-                      <button
-                        onClick={() => handleAdd(meal.id, meal.name ?? "", meal.price, meal.imageUrl)}
-                        className="flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-600"
-                      >
-                        <Plus size={14} /> Add
-                      </button>
-                    ) : (
-                      <div className="flex items-center gap-2">
+                    {meal.isAvailable ? (
+                      qty === 0 ? (
                         <button
-                          onClick={() => handleDecrease(meal.id)}
-                          className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50"
+                          onClick={() => handleAdd(meal.id, meal.name ?? "", meal.discountPrice ?? meal.price, meal.imageUrl)}
+                          className="flex items-center gap-1 rounded-lg bg-orange-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-600"
                         >
-                          <Minus size={12} />
+                          <Plus size={14} /> Add
                         </button>
-                        <span className="min-w-[1.5rem] text-center text-sm font-semibold text-gray-800">
-                          {qty}
-                        </span>
-                        <button
-                          onClick={() => handleIncrease(meal.id, meal.name ?? "", meal.price, meal.imageUrl)}
-                          className="flex h-7 w-7 items-center justify-center rounded-full bg-orange-500 text-white hover:bg-orange-600"
-                        >
-                          <Plus size={12} />
-                        </button>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleDecrease(meal.id)}
+                            className="flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50"
+                          >
+                            <Minus size={12} />
+                          </button>
+                          <span className="min-w-[1.5rem] text-center text-sm font-semibold text-gray-800">
+                            {qty}
+                          </span>
+                          <button
+                            onClick={() => handleIncrease(meal.id, meal.name ?? "", meal.discountPrice ?? meal.price, meal.imageUrl)}
+                            className="flex h-7 w-7 items-center justify-center rounded-full bg-orange-500 text-white hover:bg-orange-600"
+                          >
+                            <Plus size={12} />
+                          </button>
+                        </div>
+                      )
+                    ) : null}
                   </div>
                 </div>
               </div>

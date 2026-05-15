@@ -15,6 +15,10 @@ export interface CreateMealPayload {
   price: number;
   categoryId: string;
   image?: File;
+  isAvailable?: boolean;
+  preparationTime?: number;
+  discountPrice?: number;
+  calories?: number;
 }
 
 export interface UpdateMealPayload {
@@ -23,6 +27,10 @@ export interface UpdateMealPayload {
   description?: string;
   price: number;
   categoryId: string;
+  isAvailable: boolean;
+  preparationTime?: number;
+  discountPrice?: number;
+  calories?: number;
 }
 
 type MealsResponse = ApiResponse<PaginatedResponse<TMeal[]>>;
@@ -54,7 +62,11 @@ export const mealsApi = baseApi.injectEndpoints({
         body.append("name", fields.name);
         body.append("price", String(fields.price));
         body.append("categoryId", fields.categoryId);
+        body.append("isAvailable", String(fields.isAvailable ?? true));
         if (fields.description) body.append("description", fields.description);
+        if (fields.preparationTime != null) body.append("preparationTime", String(fields.preparationTime));
+        if (fields.discountPrice != null) body.append("discountPrice", String(fields.discountPrice));
+        if (fields.calories != null) body.append("calories", String(fields.calories));
         if (image) body.append("image", image);
         return { url: "/api/meals", method: "POST", body };
       },

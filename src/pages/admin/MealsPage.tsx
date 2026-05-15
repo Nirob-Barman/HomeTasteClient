@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, ChevronLeft, ChevronRight, Plus, Trash2, X, UtensilsCrossed } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Plus, Trash2, X, UtensilsCrossed, Pencil } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,9 +8,11 @@ import { toast } from "sonner";
 import {
   useGetMealsQuery,
   useCreateMealMutation,
+  useUpdateMealMutation,
   useDeleteMealMutation,
   useGetCategoriesQuery,
 } from "@/features/meals/mealsApi";
+import type { TMeal } from "@/types/meal";
 import { cn } from "@/utils/cn";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -20,9 +22,25 @@ const createMealSchema = z.object({
   price: z.number().min(0.01, "Price must be greater than 0"),
   categoryId: z.string().min(1, "Category is required"),
   image: z.instanceof(FileList).optional(),
+  isAvailable: z.boolean().default(true),
+  preparationTime: z.number().int().min(1).optional(),
+  discountPrice: z.number().min(0).optional(),
+  calories: z.number().int().min(0).optional(),
+});
+
+const editMealSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  price: z.number().min(0.01, "Price must be greater than 0"),
+  categoryId: z.string().min(1, "Category is required"),
+  isAvailable: z.boolean(),
+  preparationTime: z.number().int().min(1).optional(),
+  discountPrice: z.number().min(0).optional(),
+  calories: z.number().int().min(0).optional(),
 });
 
 type CreateMealForm = z.infer<typeof createMealSchema>;
+type EditMealForm = z.infer<typeof editMealSchema>;
 
 const PAGE_SIZE = 10;
 
@@ -32,6 +50,7 @@ export default function MealsPage() {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [editMeal, setEditMeal] = useState<TMeal | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data, isLoading, isFetching } = useGetMealsQuery({
@@ -41,6 +60,7 @@ export default function MealsPage() {
   });
   const { data: categoriesData } = useGetCategoriesQuery();
   const [createMeal, { isLoading: creating }] = useCreateMealMutation();
+  const [updateMeal, { isLoading: updating }] = useUpdateMealMutation();
   const [deleteMeal, { isLoading: deleting }] = useDeleteMealMutation();
 
   const meals = data?.data?.data ?? [];
@@ -54,10 +74,31 @@ export default function MealsPage() {
     formState: { errors },
   } = useForm<CreateMealForm>({ resolver: zodResolver(createMealSchema) });
 
+  const {
+    register: registerEdit,
+    handleSubmit: handleEditSubmit,
+    reset: resetEdit,
+    formState: { errors: editErrors },
+  } = useForm<EditMealForm>({ resolver: zodResolver(editMealSchema) });
+
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setPage(1);
     setSearch(searchInput);
+  }
+
+  function openEditModal(meal: TMeal) {
+    setEditMeal(meal);
+    resetEdit({
+      name: meal.name ?? "",
+      description: meal.description ?? "",
+      price: meal.price,
+      categoryId: meal.categoryId,
+      isAvailable: meal.isAvailable,
+      preparationTime: meal.preparationTime ?? undefined,
+      discountPrice: meal.discountPrice ?? undefined,
+      calories: meal.calories ?? undefined,
+    });
   }
 
   async function onCreateSubmit(values: CreateMealForm) {
@@ -68,12 +109,37 @@ export default function MealsPage() {
         price: values.price,
         categoryId: values.categoryId,
         image: values.image?.[0],
+        isAvailable: values.isAvailable,
+        preparationTime: values.preparationTime,
+        discountPrice: values.discountPrice,
+        calories: values.calories,
       }).unwrap();
       toast.success("Meal created");
       setShowModal(false);
       reset();
     } catch {
       toast.error("Failed to create meal");
+    }
+  }
+
+  async function onEditSubmit(values: EditMealForm) {
+    if (!editMeal) return;
+    try {
+      await updateMeal({
+        id: editMeal.id,
+        name: values.name,
+        description: values.description,
+        price: values.price,
+        categoryId: values.categoryId,
+        isAvailable: values.isAvailable,
+        preparationTime: values.preparationTime,
+        discountPrice: values.discountPrice,
+        calories: values.calories,
+      }).unwrap();
+      toast.success("Meal updated");
+      setEditMeal(null);
+    } catch {
+      toast.error("Failed to update meal");
     }
   }
 
@@ -151,6 +217,7 @@ export default function MealsPage() {
               <th className="px-4 py-3">Meal</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -158,7 +225,7 @@ export default function MealsPage() {
             {isLoading ? (
               Array.from({ length: 6 }).map((_, i) => (
                 <tr key={i}>
-                  {Array.from({ length: 4 }).map((_, j) => (
+                  {Array.from({ length: 5 }).map((_, j) => (
                     <td key={j} className="px-4 py-3">
                       <Skeleton className="h-4" />
                     </td>
@@ -167,7 +234,7 @@ export default function MealsPage() {
               ))
             ) : meals.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-4 py-12 text-center text-gray-400">
+                <td colSpan={5} className="px-4 py-12 text-center text-gray-400">
                   No meals found.
                 </td>
               </tr>
@@ -203,11 +270,31 @@ export default function MealsPage() {
                       {meal.categoryName ?? "—"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 font-medium text-gray-800">
-                    ${meal.price.toFixed(2)}
+                  <td className="px-4 py-3">
+                    {meal.discountPrice != null && meal.discountPrice < meal.price ? (
+                      <div>
+                        <span className="font-medium text-gray-800">${meal.discountPrice.toFixed(2)}</span>
+                        <span className="ml-1.5 text-xs text-gray-400 line-through">${meal.price.toFixed(2)}</span>
+                      </div>
+                    ) : (
+                      <span className="font-medium text-gray-800">${meal.price.toFixed(2)}</span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center justify-end">
+                    {meal.isAvailable ? (
+                      <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-600">Available</span>
+                    ) : (
+                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Unavailable</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => openEditModal(meal)}
+                        className="inline-flex items-center gap-1 rounded-md bg-gray-50 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100"
+                      >
+                        <Pencil size={13} /> Edit
+                      </button>
                       <button
                         onClick={() => setDeleteId(meal.id)}
                         className="inline-flex items-center gap-1 rounded-md bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-100"
@@ -267,7 +354,7 @@ export default function MealsPage() {
       {/* Create meal modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
+          <div className="w-full max-w-lg rounded-lg bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
               <h2 className="text-base font-semibold text-gray-800">Add Meal</h2>
               <button
@@ -346,6 +433,57 @@ export default function MealsPage() {
                 </div>
               </div>
 
+              {/* Discount price + Prep time */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-700">Discount Price ($)</label>
+                  <input
+                    {...register("discountPrice", { valueAsNumber: true })}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-700">Prep Time (min)</label>
+                  <input
+                    {...register("preparationTime", { valueAsNumber: true })}
+                    type="number"
+                    min="1"
+                    placeholder="e.g. 30"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  />
+                </div>
+              </div>
+
+              {/* Calories + Available */}
+              <div className="grid grid-cols-2 gap-3 items-end">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-700">Calories (kcal)</label>
+                  <input
+                    {...register("calories", { valueAsNumber: true })}
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 450"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  />
+                </div>
+                <div className="flex items-center gap-2 pb-2">
+                  <input
+                    {...register("isAvailable")}
+                    type="checkbox"
+                    id="create-isAvailable"
+                    className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400"
+                    defaultChecked
+                  />
+                  <label htmlFor="create-isAvailable" className="text-xs font-medium text-gray-700">
+                    Available for ordering
+                  </label>
+                </div>
+              </div>
+
               {/* Image */}
               <div>
                 <label className="mb-1 block text-xs font-medium text-gray-700">Image</label>
@@ -372,6 +510,160 @@ export default function MealsPage() {
                   className="rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-50"
                 >
                   {creating ? "Creating…" : "Create Meal"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit meal modal */}
+      {editMeal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-lg rounded-lg bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+              <h2 className="text-base font-semibold text-gray-800">Edit Meal</h2>
+              <button
+                onClick={() => setEditMeal(null)}
+                className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit(onEditSubmit)} className="space-y-4 p-5">
+              {/* Name */}
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-700">
+                  Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  {...registerEdit("name")}
+                  type="text"
+                  placeholder="e.g. Chicken Biryani"
+                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                />
+                {editErrors.name && (
+                  <p className="mt-1 text-xs text-red-500">{editErrors.name.message}</p>
+                )}
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-700">Description</label>
+                <textarea
+                  {...registerEdit("description")}
+                  rows={2}
+                  placeholder="Short description…"
+                  className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                />
+              </div>
+
+              {/* Price + Category */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-700">
+                    Price ($) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    {...registerEdit("price", { valueAsNumber: true })}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  />
+                  {editErrors.price && (
+                    <p className="mt-1 text-xs text-red-500">{editErrors.price.message}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-700">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    {...registerEdit("categoryId")}
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  >
+                    <option value="">Select…</option>
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                  {editErrors.categoryId && (
+                    <p className="mt-1 text-xs text-red-500">{editErrors.categoryId.message}</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Discount price + Prep time */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-700">Discount Price ($)</label>
+                  <input
+                    {...registerEdit("discountPrice", { valueAsNumber: true })}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-700">Prep Time (min)</label>
+                  <input
+                    {...registerEdit("preparationTime", { valueAsNumber: true })}
+                    type="number"
+                    min="1"
+                    placeholder="e.g. 30"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  />
+                </div>
+              </div>
+
+              {/* Calories + Available */}
+              <div className="grid grid-cols-2 gap-3 items-end">
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-gray-700">Calories (kcal)</label>
+                  <input
+                    {...registerEdit("calories", { valueAsNumber: true })}
+                    type="number"
+                    min="0"
+                    placeholder="e.g. 450"
+                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                  />
+                </div>
+                <div className="flex items-center gap-2 pb-2">
+                  <input
+                    {...registerEdit("isAvailable")}
+                    type="checkbox"
+                    id="edit-isAvailable"
+                    className="h-4 w-4 rounded border-gray-300 text-orange-500 focus:ring-orange-400"
+                  />
+                  <label htmlFor="edit-isAvailable" className="text-xs font-medium text-gray-700">
+                    Available for ordering
+                  </label>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setEditMeal(null)}
+                  className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={updating}
+                  className="rounded-md bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-50"
+                >
+                  {updating ? "Saving…" : "Save Changes"}
                 </button>
               </div>
             </form>
