@@ -4,9 +4,11 @@ import type { TNotification, TUnreadCount } from "@/types/notification";
 
 export const notificationsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    getNotifications: build.query<ApiResponse<PaginatedResponse<TNotification[]>>, { page?: number; pageSize?: number }>({
-      query: ({ page = 1, pageSize = 20 } = {}) =>
-        `/api/notification?page=${page}&pageSize=${pageSize}`,
+    getNotifications: build.query<ApiResponse<PaginatedResponse<TNotification[]>>, { pageNumber?: number; pageSize?: number }>({
+      query: ({ pageNumber = 1, pageSize = 20 } = {}) => ({
+        url: "/api/notification",
+        params: { pageNumber, pageSize },
+      }),
       providesTags: ["Notification"],
     }),
 

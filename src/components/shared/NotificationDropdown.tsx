@@ -29,7 +29,7 @@ export function NotificationDropdown() {
     pollingInterval: 30000,
   });
   const { data, isFetching } = useGetNotificationsQuery(
-    { page: 1, pageSize: 20 },
+    { pageNumber: 1, pageSize: 20 },
     { skip: !open }
   );
   const [markRead] = useMarkReadMutation();
