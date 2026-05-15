@@ -28,6 +28,7 @@ export const PATHS = {
     ROOT: "/customer",
     DASHBOARD: "/customer/dashboard",
     MEALS: "/customer/meals",
+    MEAL_DETAIL: "/customer/meals/:mealId",
     CHECKOUT: "/customer/checkout",
     ORDERS: "/customer/orders",
     ADDRESSES: "/customer/addresses",

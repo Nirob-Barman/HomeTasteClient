@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Search, ShoppingCart, Plus, Minus, ChevronLeft, ChevronRight } from "lucide-react";
 import { useGetMealsQuery, useGetCategoriesQuery } from "@/features/meals/mealsApi";
 import { addItem, updateQuantity } from "@/features/cart/cartSlice";
@@ -6,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { PATHS } from "@/routes/paths";
 
 const PAGE_SIZE = 12;
 
@@ -155,7 +157,10 @@ export default function CustomerMealsPage() {
                 className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
               >
                 {/* Meal image */}
-                <div className="relative h-40 bg-orange-50">
+                <Link
+                  to={PATHS.CUSTOMER.MEAL_DETAIL.replace(":mealId", meal.id)}
+                  className="relative block h-40 bg-orange-50"
+                >
                   {meal.imageUrl ? (
                     <img
                       src={meal.imageUrl}
@@ -170,11 +175,16 @@ export default function CustomerMealsPage() {
                       {meal.categoryName}
                     </span>
                   )}
-                </div>
+                </Link>
 
                 {/* Content */}
                 <div className="flex flex-1 flex-col p-3">
-                  <p className="font-semibold text-gray-800 line-clamp-1">{meal.name ?? "—"}</p>
+                  <Link
+                    to={PATHS.CUSTOMER.MEAL_DETAIL.replace(":mealId", meal.id)}
+                    className="font-semibold text-gray-800 line-clamp-1 hover:text-orange-500"
+                  >
+                    {meal.name ?? "—"}
+                  </Link>
                   {meal.description && (
                     <p className="mt-0.5 text-xs text-gray-500 line-clamp-2">{meal.description}</p>
                   )}
