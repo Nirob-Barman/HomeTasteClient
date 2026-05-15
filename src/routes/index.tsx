@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import AuthLayout from "@/layouts/AuthLayout";
 import DashboardLayout from "@/layouts/DashboardLayout";
@@ -31,6 +31,7 @@ const DeliveryDashboard = lazy(
   () => import("@/pages/delivery/DeliveryDashboard")
 );
 const ProfilePage = lazy(() => import("@/pages/shared/ProfilePage"));
+const HomePage = lazy(() => import("@/pages/HomePage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
 function PageLoader() {
@@ -163,7 +164,7 @@ export const router = createBrowserRouter([
   {
     element: <PublicLayout />,
     children: [
-      { path: PATHS.HOME, element: <Navigate to={PATHS.LOGIN} replace /> },
+      { path: PATHS.HOME, element: <Wrap><HomePage /></Wrap> },
       { path: PATHS.NOT_FOUND, element: <Wrap><NotFoundPage /></Wrap> },
     ],
   },
