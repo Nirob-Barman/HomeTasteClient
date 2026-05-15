@@ -141,14 +141,21 @@ export default function ReviewsPage() {
     }
   }
 
-  async function handleDelete(review: TReview) {
-    if (!confirm("Delete this review?")) return;
-    try {
-      await deleteReview(review.id).unwrap();
-      toast.success("Review deleted");
-    } catch {
-      toast.error("Failed to delete review");
-    }
+  function handleDelete(review: TReview) {
+    toast(`Delete review for "${review.mealName ?? "this meal"}"?`, {
+      action: {
+        label: "Delete",
+        onClick: async () => {
+          try {
+            await deleteReview(review.id).unwrap();
+            toast.success("Review deleted");
+          } catch {
+            toast.error("Failed to delete review");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   return (
