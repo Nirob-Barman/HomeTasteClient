@@ -60,6 +60,10 @@ export const authApi = baseApi.injectEndpoints({
       query: (body) => ({ url: "/api/userprofile/change-password", method: "POST", body }),
     }),
 
+    uploadAvatar: build.mutation<ApiResponse<TUserProfile>, FormData>({
+      query: (body) => ({ url: "/api/userprofile/avatar", method: "POST", body }),
+    }),
+
     logout: build.mutation<ApiResponse<null>, void>({
       query: () => ({ url: "/api/auth/logout", method: "POST" }),
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
@@ -81,5 +85,6 @@ export const {
   useGetMeQuery,
   useUpdateProfileMutation,
   useChangePasswordMutation,
+  useUploadAvatarMutation,
   useLogoutMutation,
 } = authApi;

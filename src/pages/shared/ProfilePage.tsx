@@ -1,11 +1,12 @@
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { User } from "lucide-react";
+import { User, Camera, Loader2 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { updateUser } from "@/features/auth/authSlice";
-import { useUpdateProfileMutation, useChangePasswordMutation } from "@/features/auth/authApi";
+import { useUpdateProfileMutation, useChangePasswordMutation, useUploadAvatarMutation } from "@/features/auth/authApi";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 const profileSchema = z.object({
@@ -33,9 +34,12 @@ export default function ProfilePage() {
   usePageTitle("My Profile");
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((s) => s.auth);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const [updateProfile, { isLoading: savingProfile }] = useUpdateProfileMutation();
   const [changePassword, { isLoading: savingPassword }] = useChangePasswordMutation();
+  const [uploadAvatar] = useUploadAvatarMutation();
 
   const {
     register: regProfile,
@@ -59,6 +63,24 @@ export default function ProfilePage() {
   } = useForm<PasswordForm>({
     resolver: zodResolver(passwordSchema),
   });
+
+  async function onAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const form = new FormData();
+    form.append("avatar", file);
+    setUploadingAvatar(true);
+    try {
+      const result = await uploadAvatar(form).unwrap();
+      if (result.data) dispatch(updateUser(result.data));
+      toast.success("Avatar updated");
+    } catch {
+      toast.error("Failed to upload avatar");
+    } finally {
+      setUploadingAvatar(false);
+      e.target.value = "";
+    }
+  }
 
   async function onProfileSave(values: ProfileForm) {
     try {
@@ -102,17 +124,35 @@ export default function ProfilePage() {
 
       {/* Identity summary */}
       <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-orange-100 text-orange-500">
-          {user?.profileImageUrl ? (
-            <img
-              src={user.profileImageUrl}
-              alt="avatar"
-              className="h-14 w-14 rounded-full object-cover"
-            />
-          ) : (
-            <User size={24} />
-          )}
-        </div>
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploadingAvatar}
+          className="group relative h-14 w-14 shrink-0 rounded-full focus:outline-none"
+          title="Change avatar"
+        >
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-100 text-orange-500 overflow-hidden">
+            {user?.profileImageUrl ? (
+              <img src={user.profileImageUrl} alt="avatar" className="h-14 w-14 rounded-full object-cover" />
+            ) : (
+              <User size={24} />
+            )}
+          </div>
+          <div className={`absolute inset-0 flex items-center justify-center rounded-full bg-black/40 transition-opacity ${uploadingAvatar ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+            {uploadingAvatar ? (
+              <Loader2 size={16} className="animate-spin text-white" />
+            ) : (
+              <Camera size={14} className="text-white" />
+            )}
+          </div>
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={onAvatarChange}
+        />
         <div>
           <p className="font-semibold text-gray-800">
             {user?.firstName} {user?.lastName}
