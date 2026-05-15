@@ -11,6 +11,14 @@ import {
 } from "lucide-react";
 import { PATHS } from "@/routes/paths";
 import { usePageTitle } from "@/hooks/usePageTitle";
+import { useAppSelector } from "@/app/hooks";
+import { USER_ROLES } from "@/constants/roles";
+
+function dashboardPath(roles: string[]) {
+  if (roles.includes(USER_ROLES.ADMIN)) return PATHS.ADMIN.DASHBOARD;
+  if (roles.includes(USER_ROLES.DELIVERY_PERSONNEL)) return PATHS.DELIVERY.DASHBOARD;
+  return PATHS.CUSTOMER.DASHBOARD;
+}
 
 const steps = [
   {
@@ -55,6 +63,8 @@ const features = [
 
 export default function HomePage() {
   usePageTitle("Home");
+  const { isAuthenticated, user } = useAppSelector((s) => s.auth);
+
   return (
     <>
       {/* Hero */}
@@ -71,18 +81,29 @@ export default function HomePage() {
           delivered to your door — fast.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            to={PATHS.REGISTER}
-            className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-600"
-          >
-            Get Started <ArrowRight size={16} />
-          </Link>
-          <Link
-            to={PATHS.LOGIN}
-            className="rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-          >
-            Sign In
-          </Link>
+          {isAuthenticated ? (
+            <Link
+              to={dashboardPath(user?.roles ?? [])}
+              className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-600"
+            >
+              Go to Dashboard <ArrowRight size={16} />
+            </Link>
+          ) : (
+            <>
+              <Link
+                to={PATHS.REGISTER}
+                className="flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-orange-600"
+              >
+                Get Started <ArrowRight size={16} />
+              </Link>
+              <Link
+                to={PATHS.LOGIN}
+                className="rounded-xl border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                Sign In
+              </Link>
+            </>
+          )}
         </div>
       </section>
 
