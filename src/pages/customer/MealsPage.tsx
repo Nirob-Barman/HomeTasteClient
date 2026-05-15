@@ -33,6 +33,7 @@ export default function CustomerMealsPage() {
     pageNumber: page,
     pageSize: PAGE_SIZE,
     searchTerm: debouncedSearch || undefined,
+    categoryId: categoryId ?? undefined,
   });
 
   const { data: catData } = useGetCategoriesQuery();
@@ -40,10 +41,6 @@ export default function CustomerMealsPage() {
   const meals = data?.data?.data ?? [];
   const meta = data?.data?.metaData;
   const categories = catData?.data?.data ?? [];
-
-  const visibleMeals = categoryId
-    ? meals.filter((m) => m.categoryId === categoryId)
-    : meals;
 
   function cartQty(mealId: string) {
     return cartItems.find((i) => i.mealId === mealId)?.quantity ?? 0;
@@ -106,7 +103,7 @@ export default function CustomerMealsPage() {
       {categories.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
           <button
-            onClick={() => setCategoryId(null)}
+            onClick={() => { setCategoryId(null); setPage(1); }}
             className={cn(
               "shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
               categoryId === null
@@ -119,7 +116,7 @@ export default function CustomerMealsPage() {
           {categories.map((cat) => (
             <button
               key={cat.id}
-              onClick={() => setCategoryId(cat.id)}
+              onClick={() => { setCategoryId(cat.id); setPage(1); }}
               className={cn(
                 "shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
                 categoryId === cat.id
@@ -140,7 +137,7 @@ export default function CustomerMealsPage() {
             <Skeleton key={i} className="h-64 rounded-xl" />
           ))}
         </div>
-      ) : visibleMeals.length === 0 ? (
+      ) : meals.length === 0 ? (
         <div className="py-16 text-center text-gray-400">
           <p className="text-base">No meals found.</p>
         </div>
@@ -149,7 +146,7 @@ export default function CustomerMealsPage() {
           "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4",
           isFetching && "opacity-70 pointer-events-none"
         )}>
-          {visibleMeals.map((meal) => {
+          {meals.map((meal) => {
             const qty = cartQty(meal.id);
             return (
               <div
@@ -228,7 +225,7 @@ export default function CustomerMealsPage() {
       )}
 
       {/* Pagination — server-side pages (category filter is client-side within a page) */}
-      {meta && meta.totalPages > 1 && !categoryId && meals.length > 0 && (
+      {meta && meta.totalPages > 1 && meals.length > 0 && (
         <div className="flex items-center justify-between text-sm text-gray-600">
           <span>
             Showing {(meta.pageNumber - 1) * PAGE_SIZE + 1}–

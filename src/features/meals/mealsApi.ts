@@ -6,6 +6,7 @@ export interface GetMealsParams {
   pageNumber?: number;
   pageSize?: number;
   searchTerm?: string;
+  categoryId?: string;
 }
 
 export interface CreateMealPayload {
@@ -30,9 +31,14 @@ type CategoriesResponse = ApiResponse<PaginatedResponse<TMealCategory[]>>;
 export const mealsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     getMeals: build.query<MealsResponse, GetMealsParams>({
-      query: ({ pageNumber = 1, pageSize = 10, searchTerm } = {}) => ({
+      query: ({ pageNumber = 1, pageSize = 10, searchTerm, categoryId } = {}) => ({
         url: "/api/meals",
-        params: { pageNumber, pageSize, ...(searchTerm ? { searchTerm } : {}) },
+        params: {
+          pageNumber,
+          pageSize,
+          ...(searchTerm ? { searchTerm } : {}),
+          ...(categoryId ? { categoryId } : {}),
+        },
       }),
       providesTags: ["Meal"],
     }),
