@@ -35,13 +35,16 @@ export default function InventoryPage() {
 
   const { data, isLoading } = useGetInventoryQuery();
   const [addItem, { isLoading: isAdding }] = useAddInventoryItemMutation();
-  const [updateItem, { isLoading: isUpdating }] = useUpdateInventoryItemMutation();
+  const [updateItem, { isLoading: isUpdating }] =
+    useUpdateInventoryItemMutation();
   const [deleteItem] = useDeleteInventoryItemMutation();
 
   const items = data?.data?.data ?? [];
 
   const addForm = useForm<AddFormValues>({ resolver: zodResolver(addSchema) });
-  const editForm = useForm<EditFormValues>({ resolver: zodResolver(editSchema) });
+  const editForm = useForm<EditFormValues>({
+    resolver: zodResolver(editSchema),
+  });
 
   function openAdd() {
     addForm.reset({ name: "", stockCount: 0, price: 0 });
@@ -123,7 +126,9 @@ export default function InventoryPage() {
       ) : items.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 py-16 text-center">
           <Package size={36} className="mb-3 text-gray-300" />
-          <p className="text-sm font-medium text-gray-500">No inventory items</p>
+          <p className="text-sm font-medium text-gray-500">
+            No inventory items
+          </p>
           <p className="mt-1 text-xs text-gray-400">
             Click "Add Item" to start tracking stock
           </p>
@@ -195,12 +200,20 @@ export default function InventoryPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-gray-800">Add Item</h2>
-              <button onClick={closeModal} className="rounded p-1 text-gray-400 hover:text-gray-600">
+              <h2 className="text-base font-semibold text-gray-800">
+                Add Item
+              </h2>
+              <button
+                onClick={closeModal}
+                className="rounded p-1 text-gray-400 hover:text-gray-600"
+              >
                 <X size={16} />
               </button>
             </div>
-            <form onSubmit={addForm.handleSubmit(onAddSubmit)} className="space-y-3">
+            <form
+              onSubmit={addForm.handleSubmit(onAddSubmit)}
+              className="space-y-3"
+            >
               <div>
                 <label className="mb-1 block text-xs font-medium text-gray-600">
                   Name <span className="text-red-500">*</span>
@@ -211,12 +224,16 @@ export default function InventoryPage() {
                   placeholder="e.g. Tomatoes"
                 />
                 {addForm.formState.errors.name && (
-                  <p className="mt-1 text-xs text-red-500">{addForm.formState.errors.name.message}</p>
+                  <p className="mt-1 text-xs text-red-500">
+                    {addForm.formState.errors.name.message}
+                  </p>
                 )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Stock Count</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-600">
+                    Stock Count
+                  </label>
                   <input
                     {...addForm.register("stockCount", { valueAsNumber: true })}
                     type="number"
@@ -224,11 +241,15 @@ export default function InventoryPage() {
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
                   />
                   {addForm.formState.errors.stockCount && (
-                    <p className="mt-1 text-xs text-red-500">{addForm.formState.errors.stockCount.message}</p>
+                    <p className="mt-1 text-xs text-red-500">
+                      {addForm.formState.errors.stockCount.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Price ($)</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-600">
+                    Price ($)
+                  </label>
                   <input
                     {...addForm.register("price", { valueAsNumber: true })}
                     type="number"
@@ -237,15 +258,25 @@ export default function InventoryPage() {
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
                   />
                   {addForm.formState.errors.price && (
-                    <p className="mt-1 text-xs text-red-500">{addForm.formState.errors.price.message}</p>
+                    <p className="mt-1 text-xs text-red-500">
+                      {addForm.formState.errors.price.message}
+                    </p>
                   )}
                 </div>
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button type="button" onClick={closeModal} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
                   Cancel
                 </button>
-                <button type="submit" disabled={isAdding} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-60">
+                <button
+                  type="submit"
+                  disabled={isAdding}
+                  className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-60"
+                >
                   {isAdding ? "Adding…" : "Add"}
                 </button>
               </div>
@@ -262,26 +293,40 @@ export default function InventoryPage() {
               <h2 className="text-base font-semibold text-gray-800">
                 Edit — {modal.item.name}
               </h2>
-              <button onClick={closeModal} className="rounded p-1 text-gray-400 hover:text-gray-600">
+              <button
+                onClick={closeModal}
+                className="rounded p-1 text-gray-400 hover:text-gray-600"
+              >
                 <X size={16} />
               </button>
             </div>
-            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-3">
+            <form
+              onSubmit={editForm.handleSubmit(onEditSubmit)}
+              className="space-y-3"
+            >
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Stock Count</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-600">
+                    Stock Count
+                  </label>
                   <input
-                    {...editForm.register("stockCount", { valueAsNumber: true })}
+                    {...editForm.register("stockCount", {
+                      valueAsNumber: true,
+                    })}
                     type="number"
                     min={0}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
                   />
                   {editForm.formState.errors.stockCount && (
-                    <p className="mt-1 text-xs text-red-500">{editForm.formState.errors.stockCount.message}</p>
+                    <p className="mt-1 text-xs text-red-500">
+                      {editForm.formState.errors.stockCount.message}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-gray-600">Price ($)</label>
+                  <label className="mb-1 block text-xs font-medium text-gray-600">
+                    Price ($)
+                  </label>
                   <input
                     {...editForm.register("price", { valueAsNumber: true })}
                     type="number"
@@ -290,15 +335,25 @@ export default function InventoryPage() {
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
                   />
                   {editForm.formState.errors.price && (
-                    <p className="mt-1 text-xs text-red-500">{editForm.formState.errors.price.message}</p>
+                    <p className="mt-1 text-xs text-red-500">
+                      {editForm.formState.errors.price.message}
+                    </p>
                   )}
                 </div>
               </div>
               <div className="flex justify-end gap-2 pt-1">
-                <button type="button" onClick={closeModal} className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
                   Cancel
                 </button>
-                <button type="submit" disabled={isUpdating} className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-60">
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-60"
+                >
                   {isUpdating ? "Saving…" : "Save"}
                 </button>
               </div>
