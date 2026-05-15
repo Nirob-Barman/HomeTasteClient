@@ -95,6 +95,7 @@ src/
 | `/admin/loyalty` | Loyalty account + point adjustments |
 | `/admin/analytics` | Revenue charts, top meals/customers |
 | `/admin/support` | Support ticket queue |
+| `/admin/delivery-zones` | Delivery zone CRUD (cities, postal codes, active toggle) |
 | `/admin/departments` | Departments |
 | `/admin/category-types` | Support ticket categories |
 | `/admin/tasks` | Internal tasks |
@@ -104,9 +105,9 @@ src/
 |------|------|
 | `/customer/dashboard` | Welcome + quick links |
 | `/customer/meals` | Browse meals (search, category filter, pagination) |
-| `/customer/meals/:mealId` | Meal detail (customization, reviews, add to cart) |
-| `/customer/checkout` | Cart + coupon + loyalty redemption |
-| `/customer/orders` | Order history + live status |
+| `/customer/meals/:mealId` | Meal detail (prep time, calories, discount price, reviews, add to cart) |
+| `/customer/checkout` | Cart + coupon + delivery fee + serviceability check |
+| `/customer/orders` | Order history + live status + PDF invoice download |
 | `/customer/addresses` | Delivery address book |
 | `/customer/loyalty` | Points balance, tier, transaction history |
 | `/customer/support` | Submit and track support tickets |
