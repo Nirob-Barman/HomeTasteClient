@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, UtensilsCrossed, ShoppingBag, Truck, TrendingUp, HeadphonesIcon, ArrowRight } from "lucide-react";
+import { Users, UtensilsCrossed, ShoppingBag, Truck, TrendingUp, HeadphonesIcon, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useGetDashboardStatsQuery } from "@/features/analytics/analyticsApi";
 import { useAppSelector } from "@/app/hooks";

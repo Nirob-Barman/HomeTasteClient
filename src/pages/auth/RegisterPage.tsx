@@ -8,6 +8,7 @@ import { useRegisterMutation } from "@/features/auth/authApi";
 import { useAppSelector } from "@/app/hooks";
 import { USER_ROLES } from "@/constants/roles";
 import { PATHS } from "@/routes/paths";
+import { getDefaultDashboard } from "@/utils/getDefaultDashboard";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 const schema = z.object({
@@ -28,12 +29,12 @@ type FormValues = z.infer<typeof schema>;
 export default function RegisterPage() {
   usePageTitle("Register");
   const navigate = useNavigate();
-  const { isAuthenticated } = useAppSelector((s) => s.auth);
+  const { isAuthenticated, user } = useAppSelector((s) => s.auth);
   const [register, { isLoading }] = useRegisterMutation();
 
   useEffect(() => {
-    if (isAuthenticated) navigate(PATHS.HOME, { replace: true });
-  }, [isAuthenticated, navigate]);
+    if (isAuthenticated && user) navigate(getDefaultDashboard(user.roles), { replace: true });
+  }, [isAuthenticated, user, navigate]);
 
   const {
     register: field,

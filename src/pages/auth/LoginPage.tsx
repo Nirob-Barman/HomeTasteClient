@@ -6,9 +6,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import { useLoginMutation } from "@/features/auth/authApi";
 import { useAppSelector } from "@/app/hooks";
-import { USER_ROLES } from "@/constants/roles";
 import { PATHS } from "@/routes/paths";
-import type { TRole } from "@/constants/roles";
+import { getDefaultDashboard } from "@/utils/getDefaultDashboard";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 const schema = z.object({
@@ -17,14 +16,6 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
-
-function getDefaultDashboard(roles: TRole[]): string {
-  if (roles.includes(USER_ROLES.ADMIN)) return PATHS.ADMIN.DASHBOARD;
-  if (roles.includes(USER_ROLES.CUSTOMER)) return PATHS.CUSTOMER.DASHBOARD;
-  if (roles.includes(USER_ROLES.DELIVERY_PERSONNEL))
-    return PATHS.DELIVERY.DASHBOARD;
-  return PATHS.HOME;
-}
 
 export default function LoginPage() {
   usePageTitle("Sign In");
