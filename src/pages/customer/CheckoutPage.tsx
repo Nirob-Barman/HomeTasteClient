@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { ShoppingBag, MapPin, Plus, ChevronUp, Tag, X } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { clearCart } from "@/features/cart/cartSlice";
-import { usePlaceOrderMutation } from "@/features/orders/ordersApi";
+import { usePlaceOrderMutation, useGetDeliveryFeeQuery } from "@/features/orders/ordersApi";
 import { useGetAddressesQuery, useCreateAddressMutation } from "@/features/address/addressApi";
 import { useValidateCouponMutation } from "@/features/coupons/couponsApi";
 import { PATHS } from "@/routes/paths";
@@ -58,7 +58,13 @@ export default function CheckoutPage() {
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
   const discount = appliedCoupon?.discount ?? 0;
-  const total = Math.max(0, subtotal - discount);
+
+  const { data: feeData } = useGetDeliveryFeeQuery(subtotal, { skip: subtotal === 0 });
+  const deliveryFee = feeData?.data.fee ?? 0;
+  const deliveryFeeLabel = feeData?.data.label ?? "…";
+  const freeThreshold = feeData?.data.freeThreshold ?? 50;
+
+  const total = Math.max(0, subtotal - discount + deliveryFee);
 
   const effectiveAddressId =
     selectedAddressId ?? addresses.find((a) => a.isDefault)?.id ?? addresses[0]?.id ?? null;
@@ -386,17 +392,28 @@ export default function CheckoutPage() {
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
+              <div className="flex justify-between text-gray-500">
+                <span>Delivery</span>
+                <span className={deliveryFee === 0 ? "font-medium text-green-600" : ""}>
+                  {deliveryFeeLabel}
+                </span>
+              </div>
               {discount > 0 && (
                 <div className="flex justify-between text-green-600">
-                  <span>Discount</span>
+                  <span>Coupon Discount</span>
                   <span>−${discount.toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between font-semibold text-gray-800">
+              <div className="flex justify-between font-semibold text-gray-800 border-t border-gray-100 pt-1.5">
                 <span>Total</span>
                 <span className="text-orange-500">${total.toFixed(2)}</span>
               </div>
             </div>
+            {deliveryFee > 0 && (
+              <p className="mt-2 text-center text-xs text-gray-400">
+                Add ${(freeThreshold - subtotal).toFixed(2)} more for free delivery
+              </p>
+            )}
 
             <button
               onClick={handlePlaceOrder}

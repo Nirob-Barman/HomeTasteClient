@@ -1,5 +1,5 @@
 import { baseApi } from "@/app/baseApi";
-import type { TOrder, TOrderStatus, CreateOrderRequest } from "@/types/order";
+import type { TOrder, TOrderStatus, TDeliveryFee, CreateOrderRequest } from "@/types/order";
 import type { ApiResponse, PaginatedResponse } from "@/types/api";
 
 export interface GetOrdersParams {
@@ -55,6 +55,10 @@ export const ordersApi = baseApi.injectEndpoints({
       query: (id) => `/api/order/${id}`,
       providesTags: (_r, _e, id) => [{ type: "Order", id }],
     }),
+
+    getDeliveryFee: build.query<ApiResponse<TDeliveryFee>, number>({
+      query: (subTotal) => ({ url: "/api/order/delivery-fee", params: { subTotal } }),
+    }),
   }),
   overrideExisting: false,
 });
@@ -66,4 +70,5 @@ export const {
   usePlaceOrderMutation,
   useGetMyOrdersQuery,
   useGetMyOrderByIdQuery,
+  useGetDeliveryFeeQuery,
 } = ordersApi;

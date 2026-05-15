@@ -60,6 +60,13 @@ export interface TOrderItem {
   specialInstructions: string | null;
 }
 
+export interface TDeliveryFee {
+  fee: number;
+  isFree: boolean;
+  label: string;
+  freeThreshold: number;
+}
+
 export interface TOrder {
   id: string;
   userId: string;
@@ -68,6 +75,7 @@ export interface TOrder {
   status: TOrderStatus;
   statusLabel: string | null;
   subTotal: number;
+  deliveryFee: number;
   discountAmount: number;
   taxAmount: number;
   totalAmount: number;
