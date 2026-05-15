@@ -17,6 +17,7 @@ import {
   Leaf,
   Link2,
   Settings2,
+  Building2,
   type LucideIcon,
 } from "lucide-react";
 import { USER_ROLES, type TRole } from "@/constants/roles";
@@ -49,6 +50,7 @@ export const menuConfig: MenuConfig = {
     { label: "Meal Ingredients", path: PATHS.ADMIN.MEAL_INGREDIENTS, icon: Link2 },
     { label: "Customization", path: PATHS.ADMIN.MEAL_CUSTOMIZATION, icon: Settings2 },
     { label: "Loyalty", path: PATHS.ADMIN.LOYALTY, icon: Gift },
+    { label: "Departments", path: PATHS.ADMIN.DEPARTMENTS, icon: Building2 },
   ],
   [USER_ROLES.CUSTOMER]: [
     {

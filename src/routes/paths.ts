@@ -23,6 +23,7 @@ export const PATHS = {
     MEAL_INGREDIENTS: "/admin/meal-ingredients",
     MEAL_CUSTOMIZATION: "/admin/meal-customization",
     LOYALTY: "/admin/loyalty",
+    DEPARTMENTS: "/admin/departments",
   },
   CUSTOMER: {
     ROOT: "/customer",
