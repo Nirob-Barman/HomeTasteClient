@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ShoppingBag } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, ShoppingBag, CreditCard, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import { useGetMyOrdersQuery } from "@/features/orders/ordersApi";
-import { ORDER_STATUS_LABEL, ORDER_STATUS_COLOR, type TOrder } from "@/types/order";
+import { useInitiatePaymentMutation, useConfirmPaymentMutation } from "@/features/payment/paymentApi";
+import { ORDER_STATUS, ORDER_STATUS_LABEL, ORDER_STATUS_COLOR, type TOrder } from "@/types/order";
 import { PATHS } from "@/routes/paths";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
@@ -25,8 +27,108 @@ function shortId(id: string) {
   return id.slice(0, 8).toUpperCase();
 }
 
+function PaymentModal({ order, onClose }: { order: TOrder; onClose: () => void }) {
+  const [gateway, setGateway] = useState("");
+  const [transactionRef, setTransactionRef] = useState("");
+  const [transactionId, setTransactionId] = useState<string | null>(null);
+  const [initiatePayment, { isLoading: initiating }] = useInitiatePaymentMutation();
+  const [confirmPayment, { isLoading: confirming }] = useConfirmPaymentMutation();
+
+  async function handleInitiate() {
+    try {
+      const res = await initiatePayment({
+        orderId: order.id,
+        gateway: gateway || undefined,
+      }).unwrap();
+      if (res.data?.id) {
+        setTransactionId(res.data.id);
+        toast.success("Payment initiated — enter your transaction reference to confirm");
+      }
+    } catch {
+      toast.error("Failed to initiate payment");
+    }
+  }
+
+  async function handleConfirm() {
+    if (!transactionId) return;
+    try {
+      await confirmPayment({
+        id: transactionId,
+        transactionRef: transactionRef || undefined,
+      }).unwrap();
+      toast.success("Payment confirmed successfully!");
+      onClose();
+    } catch {
+      toast.error("Failed to confirm payment");
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-gray-800">Pay for Order #{order.id.slice(0, 8).toUpperCase()}</h2>
+          <button onClick={onClose} className="rounded p-1 text-gray-400 hover:text-gray-600">
+            <X size={16} />
+          </button>
+        </div>
+
+        <p className="mb-4 text-sm text-gray-500">
+          Amount: <span className="font-semibold text-gray-800">${order.totalAmount.toFixed(2)}</span>
+        </p>
+
+        {!transactionId ? (
+          <div className="space-y-3">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Gateway (optional)</label>
+              <input
+                value={gateway}
+                onChange={(e) => setGateway(e.target.value)}
+                placeholder="e.g. Stripe, PayPal"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+              />
+            </div>
+            <button
+              onClick={handleInitiate}
+              disabled={initiating}
+              className="w-full rounded-lg bg-orange-500 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-60"
+            >
+              {initiating ? "Initiating…" : "Initiate Payment"}
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="rounded-lg bg-green-50 px-3 py-2 text-xs text-green-700">
+              Payment initiated. Enter the transaction reference from your gateway to confirm.
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Transaction Reference</label>
+              <input
+                value={transactionRef}
+                onChange={(e) => setTransactionRef(e.target.value)}
+                placeholder="TXN-XXXXXXXXXXXX"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+              />
+            </div>
+            <button
+              onClick={handleConfirm}
+              disabled={confirming}
+              className="w-full rounded-lg bg-orange-500 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-60"
+            >
+              {confirming ? "Confirming…" : "Confirm Payment"}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function OrderRow({ order }: { order: TOrder }) {
   const [expanded, setExpanded] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+
+  const canPay = order.status === ORDER_STATUS.Pending || order.status === ORDER_STATUS.Confirmed;
 
   return (
     <>
@@ -55,13 +157,27 @@ function OrderRow({ order }: { order: TOrder }) {
           ${order.totalAmount.toFixed(2)}
         </td>
         <td className="px-4 py-3 text-right">
-          {expanded ? (
-            <ChevronUp size={16} className="ml-auto text-gray-400" />
-          ) : (
-            <ChevronDown size={16} className="ml-auto text-gray-400" />
-          )}
+          <div className="flex items-center justify-end gap-2">
+            {canPay && (
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowPayment(true); }}
+                className="flex items-center gap-1 rounded-lg bg-orange-500 px-2.5 py-1 text-xs font-medium text-white hover:bg-orange-600"
+              >
+                <CreditCard size={12} /> Pay
+              </button>
+            )}
+            {expanded ? (
+              <ChevronUp size={16} className="text-gray-400" />
+            ) : (
+              <ChevronDown size={16} className="text-gray-400" />
+            )}
+          </div>
         </td>
       </tr>
+
+      {showPayment && (
+        <PaymentModal order={order} onClose={() => setShowPayment(false)} />
+      )}
 
       {expanded && (
         <tr className="bg-gray-50">

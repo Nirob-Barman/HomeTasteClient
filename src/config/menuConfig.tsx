@@ -11,6 +11,7 @@ import {
   ClipboardList,
   Tag,
   Star,
+  CreditCard,
   type LucideIcon,
 } from "lucide-react";
 import { USER_ROLES, type TRole } from "@/constants/roles";
@@ -36,6 +37,7 @@ export const menuConfig: MenuConfig = {
     { label: "Categories", path: PATHS.ADMIN.CATEGORIES, icon: UtensilsCrossed },
     { label: "Inventory", path: PATHS.ADMIN.INVENTORY, icon: ShoppingBag },
     { label: "Coupons", path: PATHS.ADMIN.COUPONS, icon: Tag },
+    { label: "Payments", path: PATHS.ADMIN.PAYMENTS, icon: CreditCard },
   ],
   [USER_ROLES.CUSTOMER]: [
     {

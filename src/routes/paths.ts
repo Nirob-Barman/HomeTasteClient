@@ -16,6 +16,7 @@ export const PATHS = {
     CATEGORIES: "/admin/categories",
     INVENTORY: "/admin/inventory",
     COUPONS: "/admin/coupons",
+    PAYMENTS: "/admin/payments",
   },
   CUSTOMER: {
     ROOT: "/customer",

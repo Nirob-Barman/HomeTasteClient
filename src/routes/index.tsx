@@ -22,6 +22,7 @@ const SupportPage = lazy(() => import("@/pages/admin/SupportPage"));
 const CategoriesPage = lazy(() => import("@/pages/admin/CategoriesPage"));
 const InventoryPage = lazy(() => import("@/pages/admin/InventoryPage"));
 const CouponsPage = lazy(() => import("@/pages/admin/CouponsPage"));
+const PaymentsPage = lazy(() => import("@/pages/admin/PaymentsPage"));
 const CustomerDashboard = lazy(
   () => import("@/pages/customer/CustomerDashboard")
 );
@@ -116,6 +117,10 @@ export const router = createBrowserRouter([
               {
                 path: PATHS.ADMIN.COUPONS,
                 element: <Wrap><CouponsPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.PAYMENTS,
+                element: <Wrap><PaymentsPage /></Wrap>,
               },
             ],
           },
