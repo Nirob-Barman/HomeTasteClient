@@ -16,13 +16,13 @@ import { Skeleton } from "@/components/ui/Skeleton";
 
 const addSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  stockCount: z.coerce.number().int().min(0, "Stock must be 0 or more"),
-  price: z.coerce.number().min(0, "Price must be 0 or more"),
+  stockCount: z.number().int().min(0, "Stock must be 0 or more"),
+  price: z.number().min(0, "Price must be 0 or more"),
 });
 
 const editSchema = z.object({
-  stockCount: z.coerce.number().int().min(0, "Stock must be 0 or more"),
-  price: z.coerce.number().min(0, "Price must be 0 or more"),
+  stockCount: z.number().int().min(0, "Stock must be 0 or more"),
+  price: z.number().min(0, "Price must be 0 or more"),
 });
 
 type AddFormValues = z.infer<typeof addSchema>;
@@ -211,7 +211,7 @@ export default function InventoryPage() {
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600">Stock Count</label>
                   <input
-                    {...addForm.register("stockCount")}
+                    {...addForm.register("stockCount", { valueAsNumber: true })}
                     type="number"
                     min={0}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
@@ -223,7 +223,7 @@ export default function InventoryPage() {
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600">Price ($)</label>
                   <input
-                    {...addForm.register("price")}
+                    {...addForm.register("price", { valueAsNumber: true })}
                     type="number"
                     min={0}
                     step="0.01"
@@ -264,7 +264,7 @@ export default function InventoryPage() {
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600">Stock Count</label>
                   <input
-                    {...editForm.register("stockCount")}
+                    {...editForm.register("stockCount", { valueAsNumber: true })}
                     type="number"
                     min={0}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
@@ -276,7 +276,7 @@ export default function InventoryPage() {
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600">Price ($)</label>
                   <input
-                    {...editForm.register("price")}
+                    {...editForm.register("price", { valueAsNumber: true })}
                     type="number"
                     min={0}
                     step="0.01"

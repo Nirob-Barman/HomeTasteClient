@@ -19,11 +19,11 @@ import { Skeleton } from "@/components/ui/Skeleton";
 const schema = z.object({
   code: z.string().min(1, "Code is required"),
   description: z.string().optional(),
-  discountType: z.coerce.number().min(1).max(2),
-  discountValue: z.coerce.number().positive("Must be positive"),
-  minOrderAmount: z.coerce.number().min(0).optional(),
-  maxDiscountAmount: z.coerce.number().min(0).optional(),
-  usageLimit: z.coerce.number().int().min(1).optional(),
+  discountType: z.number().min(1).max(2),
+  discountValue: z.number().positive("Must be positive"),
+  minOrderAmount: z.number().min(0).optional(),
+  maxDiscountAmount: z.number().min(0).optional(),
+  usageLimit: z.number().int().min(1).optional(),
   expiresAt: z.string().optional(),
   isActive: z.boolean(),
   isFirstOrderOnly: z.boolean(),
@@ -264,7 +264,7 @@ export default function CouponsPage() {
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600">Discount Type</label>
                   <select
-                    {...register("discountType")}
+                    {...register("discountType", { valueAsNumber: true })}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
                   >
                     <option value={DISCOUNT_TYPE.Percentage}>Percentage</option>
@@ -277,7 +277,7 @@ export default function CouponsPage() {
                     Discount Value <span className="text-red-500">*</span>
                   </label>
                   <input
-                    {...register("discountValue")}
+                    {...register("discountValue", { valueAsNumber: true })}
                     type="number"
                     min={0}
                     step="0.01"
@@ -289,7 +289,7 @@ export default function CouponsPage() {
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600">Min Order ($)</label>
                   <input
-                    {...register("minOrderAmount")}
+                    {...register("minOrderAmount", { valueAsNumber: true })}
                     type="number"
                     min={0}
                     step="0.01"
@@ -300,7 +300,7 @@ export default function CouponsPage() {
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600">Max Discount ($)</label>
                   <input
-                    {...register("maxDiscountAmount")}
+                    {...register("maxDiscountAmount", { valueAsNumber: true })}
                     type="number"
                     min={0}
                     step="0.01"
@@ -311,7 +311,7 @@ export default function CouponsPage() {
                 <div>
                   <label className="mb-1 block text-xs font-medium text-gray-600">Usage Limit</label>
                   <input
-                    {...register("usageLimit")}
+                    {...register("usageLimit", { valueAsNumber: true })}
                     type="number"
                     min={1}
                     className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"

@@ -36,7 +36,7 @@ const PRIORITY_COLOR: Record<TTicketPriority, string> = {
 const schema = z.object({
   subject: z.string().min(1, "Subject is required"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  priority: z.coerce.number().min(1).max(4) as z.ZodType<TTicketPriority>,
+  priority: z.number().min(1).max(4),
   mobileNo: z.string().optional(),
 });
 
@@ -66,7 +66,7 @@ export default function SupportPage() {
 
   async function onSubmit(values: FormValues) {
     try {
-      await createTicket(values).unwrap();
+      await createTicket({ ...values, priority: values.priority as TTicketPriority }).unwrap();
       toast.success("Ticket submitted successfully");
       reset();
       setShowForm(false);
@@ -125,7 +125,7 @@ export default function SupportPage() {
                   Priority
                 </label>
                 <select
-                  {...register("priority")}
+                  {...register("priority", { valueAsNumber: true })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
                 >
                   {Object.entries(TICKET_PRIORITY).map(([label, value]) => (

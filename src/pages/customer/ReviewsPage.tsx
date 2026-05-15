@@ -18,12 +18,12 @@ import { Skeleton } from "@/components/ui/Skeleton";
 
 const submitSchema = z.object({
   mealId: z.string().min(1, "Please select a meal"),
-  rating: z.coerce.number().int().min(1).max(5),
+  rating: z.number().int().min(1).max(5),
   feedback: z.string().optional(),
 });
 
 const editSchema = z.object({
-  rating: z.coerce.number().int().min(1).max(5),
+  rating: z.number().int().min(1).max(5),
   feedback: z.string().optional(),
 });
 
