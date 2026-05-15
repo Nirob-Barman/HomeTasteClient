@@ -160,17 +160,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-100 px-6 py-8 text-center text-xs text-gray-400">
-        © {new Date().getFullYear()} HomeTaste ·{" "}
-        <Link to={PATHS.LOGIN} className="hover:text-orange-500">
-          Sign In
-        </Link>
-        {" · "}
-        <Link to={PATHS.REGISTER} className="hover:text-orange-500">
-          Register
-        </Link>
-      </footer>
     </>
   );
 }
