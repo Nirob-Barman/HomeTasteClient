@@ -1,4 +1,5 @@
 import { Menu, LogOut, User, ShoppingCart } from "lucide-react";
+import { NotificationDropdown } from "./NotificationDropdown";
 import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useLogoutMutation } from "@/features/auth/authApi";
@@ -41,6 +42,7 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
       </button>
 
       <div className="flex items-center gap-3">
+        <NotificationDropdown />
         {isCustomer && (
           <button
             onClick={() => navigate(PATHS.CUSTOMER.CHECKOUT)}
