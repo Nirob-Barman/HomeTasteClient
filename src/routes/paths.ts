@@ -13,6 +13,9 @@ export const PATHS = {
     DELIVERIES: "/admin/deliveries",
     ANALYTICS: "/admin/analytics",
     SUPPORT: "/admin/support",
+    CATEGORIES: "/admin/categories",
+    INVENTORY: "/admin/inventory",
+    COUPONS: "/admin/coupons",
   },
   CUSTOMER: {
     ROOT: "/customer",
@@ -22,6 +25,8 @@ export const PATHS = {
     ORDERS: "/customer/orders",
     ADDRESSES: "/customer/addresses",
     LOYALTY: "/customer/loyalty",
+    SUPPORT: "/customer/support",
+    REVIEWS: "/customer/reviews",
   },
   DELIVERY: {
     ROOT: "/delivery",

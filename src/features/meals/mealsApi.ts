@@ -73,6 +73,31 @@ export const mealsApi = baseApi.injectEndpoints({
       query: () => ({ url: "/api/mealcategories", params: { pageNumber: 1, pageSize: 100 } }),
       providesTags: ["MealCategory"],
     }),
+
+    createCategory: build.mutation<
+      ApiResponse<TMealCategory>,
+      { name: string; description?: string; imageUrl?: string }
+    >({
+      query: (body) => ({ url: "/api/mealcategories", method: "POST", body }),
+      invalidatesTags: ["MealCategory"],
+    }),
+
+    updateCategory: build.mutation<
+      ApiResponse<TMealCategory>,
+      { id: string; name: string; description?: string; imageUrl?: string }
+    >({
+      query: ({ id, ...body }) => ({
+        url: `/api/mealcategories/${id}`,
+        method: "PUT",
+        body,
+      }),
+      invalidatesTags: ["MealCategory"],
+    }),
+
+    deleteCategory: build.mutation<ApiResponse<boolean>, string>({
+      query: (id) => ({ url: `/api/mealcategories/${id}`, method: "DELETE" }),
+      invalidatesTags: ["MealCategory"],
+    }),
   }),
   overrideExisting: false,
 });
@@ -84,4 +109,7 @@ export const {
   useUpdateMealMutation,
   useDeleteMealMutation,
   useGetCategoriesQuery,
+  useCreateCategoryMutation,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
 } = mealsApi;

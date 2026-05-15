@@ -9,6 +9,8 @@ import {
   MapPin,
   Gift,
   ClipboardList,
+  Tag,
+  Star,
   type LucideIcon,
 } from "lucide-react";
 import { USER_ROLES, type TRole } from "@/constants/roles";
@@ -31,6 +33,9 @@ export const menuConfig: MenuConfig = {
     { label: "Deliveries", path: PATHS.ADMIN.DELIVERIES, icon: Truck },
     { label: "Analytics", path: PATHS.ADMIN.ANALYTICS, icon: BarChart3 },
     { label: "Support", path: PATHS.ADMIN.SUPPORT, icon: HeadphonesIcon },
+    { label: "Categories", path: PATHS.ADMIN.CATEGORIES, icon: UtensilsCrossed },
+    { label: "Inventory", path: PATHS.ADMIN.INVENTORY, icon: ShoppingBag },
+    { label: "Coupons", path: PATHS.ADMIN.COUPONS, icon: Tag },
   ],
   [USER_ROLES.CUSTOMER]: [
     {
@@ -42,6 +47,8 @@ export const menuConfig: MenuConfig = {
     { label: "My Orders", path: PATHS.CUSTOMER.ORDERS, icon: ShoppingBag },
     { label: "Addresses", path: PATHS.CUSTOMER.ADDRESSES, icon: MapPin },
     { label: "Loyalty", path: PATHS.CUSTOMER.LOYALTY, icon: Gift },
+    { label: "Support", path: PATHS.CUSTOMER.SUPPORT, icon: HeadphonesIcon },
+    { label: "Reviews", path: PATHS.CUSTOMER.REVIEWS, icon: Star },
   ],
   [USER_ROLES.DELIVERY_PERSONNEL]: [
     {

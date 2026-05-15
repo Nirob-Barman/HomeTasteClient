@@ -46,3 +46,10 @@ export interface TSupportTicket {
 export interface UpdateTicketStatusRequest {
   status: TTicketStatus;
 }
+
+export interface CreateTicketRequest {
+  subject: string;
+  description: string;
+  priority: TTicketPriority;
+  mobileNo?: string;
+}

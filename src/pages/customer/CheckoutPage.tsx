@@ -4,11 +4,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ShoppingBag, MapPin, Plus, ChevronUp } from "lucide-react";
+import { ShoppingBag, MapPin, Plus, ChevronUp, Tag, X } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { clearCart } from "@/features/cart/cartSlice";
 import { usePlaceOrderMutation } from "@/features/orders/ordersApi";
 import { useGetAddressesQuery, useCreateAddressMutation } from "@/features/address/addressApi";
+import { useValidateCouponMutation } from "@/features/coupons/couponsApi";
 import { PATHS } from "@/routes/paths";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
@@ -35,10 +36,13 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [showNewAddress, setShowNewAddress] = useState(false);
   const [notes, setNotes] = useState("");
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
 
   const { data: addrData, isLoading: loadingAddresses } = useGetAddressesQuery();
   const [createAddress, { isLoading: creatingAddress }] = useCreateAddressMutation();
   const [placeOrder, { isLoading: placing }] = usePlaceOrderMutation();
+  const [validateCoupon, { isLoading: validatingCoupon }] = useValidateCouponMutation();
 
   const addresses = addrData?.data ?? [];
 
@@ -53,6 +57,8 @@ export default function CheckoutPage() {
   });
 
   const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
+  const discount = appliedCoupon?.discount ?? 0;
+  const total = Math.max(0, subtotal - discount);
 
   const effectiveAddressId =
     selectedAddressId ?? addresses.find((a) => a.isDefault)?.id ?? addresses[0]?.id ?? null;
@@ -71,6 +77,23 @@ export default function CheckoutPage() {
     }
   }
 
+  async function handleApplyCoupon() {
+    const code = couponInput.trim();
+    if (!code) return;
+    try {
+      const res = await validateCoupon({ code, orderAmount: subtotal }).unwrap();
+      const result = res.data;
+      if (result?.isValid) {
+        setAppliedCoupon({ code, discount: result.discountAmount });
+        toast.success(`Coupon applied — you save $${result.discountAmount.toFixed(2)}`);
+      } else {
+        toast.error(result?.message ?? "Invalid coupon");
+      }
+    } catch {
+      toast.error("Failed to validate coupon");
+    }
+  }
+
   async function handlePlaceOrder() {
     if (!effectiveAddressId) {
       toast.error("Please select or add a delivery address");
@@ -84,6 +107,7 @@ export default function CheckoutPage() {
       await placeOrder({
         addressId: effectiveAddressId,
         items: cartItems.map((i) => ({ mealId: i.mealId, quantity: i.quantity })),
+        couponCode: appliedCoupon?.code,
         pointsToRedeem: 0,
         notes: notes || undefined,
       }).unwrap();
@@ -278,6 +302,44 @@ export default function CheckoutPage() {
             )}
           </section>
 
+          {/* Coupon */}
+          <section className="rounded-xl border border-gray-200 bg-white p-5">
+            <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <Tag size={15} className="text-orange-500" /> Coupon Code
+            </h2>
+            {appliedCoupon ? (
+              <div className="flex items-center justify-between rounded-lg bg-green-50 px-3 py-2">
+                <p className="text-sm text-green-700 font-medium">
+                  "{appliedCoupon.code}" — you save ${appliedCoupon.discount.toFixed(2)}
+                </p>
+                <button
+                  onClick={() => { setAppliedCoupon(null); setCouponInput(""); }}
+                  className="ml-2 text-green-600 hover:text-green-800"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  value={couponInput}
+                  onChange={(e) => setCouponInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleApplyCoupon()}
+                  placeholder="Enter coupon code"
+                  className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none focus:ring-1 focus:ring-orange-400"
+                />
+                <button
+                  type="button"
+                  onClick={handleApplyCoupon}
+                  disabled={validatingCoupon || !couponInput.trim()}
+                  className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-50"
+                >
+                  {validatingCoupon ? "…" : "Apply"}
+                </button>
+              </div>
+            )}
+          </section>
+
           {/* Notes */}
           <section className="rounded-xl border border-gray-200 bg-white p-5">
             <h2 className="mb-2 text-sm font-semibold text-gray-700">Order Notes</h2>
@@ -324,9 +386,15 @@ export default function CheckoutPage() {
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <span>Discount</span>
+                  <span>−${discount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between font-semibold text-gray-800">
                 <span>Total</span>
-                <span className="text-orange-500">${subtotal.toFixed(2)}</span>
+                <span className="text-orange-500">${total.toFixed(2)}</span>
               </div>
             </div>
 

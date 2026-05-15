@@ -18,6 +18,9 @@ const OrdersPage = lazy(() => import("@/pages/admin/OrdersPage"));
 const DeliveriesPage = lazy(() => import("@/pages/admin/DeliveriesPage"));
 const AnalyticsPage = lazy(() => import("@/pages/admin/AnalyticsPage"));
 const SupportPage = lazy(() => import("@/pages/admin/SupportPage"));
+const CategoriesPage = lazy(() => import("@/pages/admin/CategoriesPage"));
+const InventoryPage = lazy(() => import("@/pages/admin/InventoryPage"));
+const CouponsPage = lazy(() => import("@/pages/admin/CouponsPage"));
 const CustomerDashboard = lazy(
   () => import("@/pages/customer/CustomerDashboard")
 );
@@ -26,6 +29,8 @@ const CheckoutPage = lazy(() => import("@/pages/customer/CheckoutPage"));
 const CustomerOrdersPage = lazy(() => import("@/pages/customer/OrdersPage"));
 const AddressesPage = lazy(() => import("@/pages/customer/AddressesPage"));
 const LoyaltyPage = lazy(() => import("@/pages/customer/LoyaltyPage"));
+const CustomerSupportPage = lazy(() => import("@/pages/customer/SupportPage"));
+const ReviewsPage = lazy(() => import("@/pages/customer/ReviewsPage"));
 const AssignmentsPage = lazy(() => import("@/pages/delivery/AssignmentsPage"));
 const DeliveryDashboard = lazy(
   () => import("@/pages/delivery/DeliveryDashboard")
@@ -99,6 +104,18 @@ export const router = createBrowserRouter([
                 path: PATHS.ADMIN.SUPPORT,
                 element: <Wrap><SupportPage /></Wrap>,
               },
+              {
+                path: PATHS.ADMIN.CATEGORIES,
+                element: <Wrap><CategoriesPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.INVENTORY,
+                element: <Wrap><InventoryPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.COUPONS,
+                element: <Wrap><CouponsPage /></Wrap>,
+              },
             ],
           },
 
@@ -129,6 +146,14 @@ export const router = createBrowserRouter([
               {
                 path: PATHS.CUSTOMER.LOYALTY,
                 element: <Wrap><LoyaltyPage /></Wrap>,
+              },
+              {
+                path: PATHS.CUSTOMER.SUPPORT,
+                element: <Wrap><CustomerSupportPage /></Wrap>,
+              },
+              {
+                path: PATHS.CUSTOMER.REVIEWS,
+                element: <Wrap><ReviewsPage /></Wrap>,
               },
             ],
           },
