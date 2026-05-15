@@ -46,6 +46,21 @@ export const deliveryApi = baseApi.injectEndpoints({
       providesTags: ["Delivery"],
     }),
 
+    createPersonnel: build.mutation<ApiResponse<TDeliveryPersonnel>, { fullName: string; phone?: string; vehicleType?: string; vehicleNumber?: string; userId?: string }>({
+      query: (body) => ({ url: "/api/delivery/personnel", method: "POST", body }),
+      invalidatesTags: ["Delivery"],
+    }),
+
+    updatePersonnel: build.mutation<ApiResponse<TDeliveryPersonnel>, { id: string; fullName: string; phone?: string; vehicleType?: string; vehicleNumber?: string }>({
+      query: ({ id, ...body }) => ({ url: `/api/delivery/personnel/${id}`, method: "PUT", body }),
+      invalidatesTags: ["Delivery"],
+    }),
+
+    deletePersonnel: build.mutation<ApiResponse<boolean>, string>({
+      query: (id) => ({ url: `/api/delivery/personnel/${id}`, method: "DELETE" }),
+      invalidatesTags: ["Delivery"],
+    }),
+
     updateLocation: build.mutation<ApiResponse<TDeliveryPersonnel>, { id: string; latitude: number; longitude: number }>({
       query: ({ id, ...body }) => ({
         url: `/api/delivery/personnel/${id}/location`,
@@ -65,4 +80,7 @@ export const {
   useUpdateDeliveryStatusMutation,
   useGetMyDeliveriesQuery,
   useUpdateLocationMutation,
+  useCreatePersonnelMutation,
+  useUpdatePersonnelMutation,
+  useDeletePersonnelMutation,
 } = deliveryApi;

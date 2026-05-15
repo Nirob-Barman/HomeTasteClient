@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Truck, Star, ToggleLeft, ToggleRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Truck, Star, ToggleLeft, ToggleRight, Plus, Pencil, Trash2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,11 +9,24 @@ import {
   useGetPersonnelQuery,
   useToggleAvailabilityMutation,
   useAssignDeliveryMutation,
+  useCreatePersonnelMutation,
+  useUpdatePersonnelMutation,
+  useDeletePersonnelMutation,
 } from "@/features/delivery/deliveryApi";
+import type { TDeliveryPersonnel } from "@/types/delivery";
 import { cn } from "@/utils/cn";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 const PAGE_SIZE = 15;
+
+const personnelSchema = z.object({
+  fullName: z.string().min(1, "Name is required"),
+  phone: z.string().optional(),
+  vehicleType: z.string().optional(),
+  vehicleNumber: z.string().optional(),
+  userId: z.string().optional(),
+});
+type PersonnelForm = z.infer<typeof personnelSchema>;
 
 const assignSchema = z.object({
   orderId: z.string().uuid("Must be a valid order ID"),
@@ -21,14 +34,98 @@ const assignSchema = z.object({
 });
 type AssignForm = z.infer<typeof assignSchema>;
 
+function PersonnelModal({ personnel, onClose }: { personnel: TDeliveryPersonnel | null; onClose: () => void }) {
+  const [create, { isLoading: creating }] = useCreatePersonnelMutation();
+  const [update, { isLoading: updating }] = useUpdatePersonnelMutation();
+  const busy = creating || updating;
+
+  const { register, handleSubmit, formState: { errors } } = useForm<PersonnelForm>({
+    resolver: zodResolver(personnelSchema),
+    defaultValues: {
+      fullName: personnel?.fullName ?? "",
+      phone: personnel?.phone ?? "",
+      vehicleType: personnel?.vehicleType ?? "",
+      vehicleNumber: personnel?.vehicleNumber ?? "",
+      userId: personnel?.userId ?? "",
+    },
+  });
+
+  async function onSubmit(data: PersonnelForm) {
+    const payload = {
+      fullName: data.fullName,
+      phone: data.phone || undefined,
+      vehicleType: data.vehicleType || undefined,
+      vehicleNumber: data.vehicleNumber || undefined,
+      userId: data.userId || undefined,
+    };
+    try {
+      if (personnel) {
+        await update({ id: personnel.id, ...payload }).unwrap();
+        toast.success("Personnel updated");
+      } else {
+        await create(payload).unwrap();
+        toast.success("Personnel added");
+      }
+      onClose();
+    } catch {
+      toast.error("Failed to save personnel");
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
+        <h2 className="mb-4 text-base font-semibold text-gray-800">
+          {personnel ? "Edit Personnel" : "Add Delivery Personnel"}
+        </h2>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-600">Full Name</label>
+            <input {...register("fullName")} placeholder="e.g. John Doe" className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none" />
+            {errors.fullName && <p className="mt-0.5 text-xs text-red-500">{errors.fullName.message}</p>}
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-medium text-gray-600">Phone</label>
+            <input {...register("phone")} placeholder="e.g. +1 555 0100" className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none" />
+          </div>
+          <div className="flex gap-2">
+            <div className="flex-1">
+              <label className="mb-1 block text-xs font-medium text-gray-600">Vehicle Type</label>
+              <input {...register("vehicleType")} placeholder="e.g. Bike" className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none" />
+            </div>
+            <div className="flex-1">
+              <label className="mb-1 block text-xs font-medium text-gray-600">Vehicle No.</label>
+              <input {...register("vehicleNumber")} placeholder="e.g. ABC-123" className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-orange-400 focus:outline-none" />
+            </div>
+          </div>
+          {!personnel && (
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">User ID <span className="text-gray-400">(optional)</span></label>
+              <input {...register("userId")} placeholder="Link to existing user account" className="w-full rounded-md border border-gray-300 px-3 py-2 font-mono text-sm focus:border-orange-400 focus:outline-none" />
+            </div>
+          )}
+          <div className="flex gap-2 pt-2">
+            <button type="button" onClick={onClose} className="flex-1 rounded-lg border border-gray-300 py-2 text-sm text-gray-600 hover:bg-gray-50">Cancel</button>
+            <button type="submit" disabled={busy} className="flex-1 rounded-lg bg-orange-500 py-2 text-sm font-medium text-white hover:bg-orange-600 disabled:opacity-60">
+              {busy ? "Saving…" : "Save"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function DeliveriesPage() {
   usePageTitle("Deliveries");
   const [page, setPage] = useState(1);
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [editingPersonnel, setEditingPersonnel] = useState<TDeliveryPersonnel | null | undefined>(undefined);
 
   const { data, isLoading, isFetching } = useGetPersonnelQuery({ pageNumber: page, pageSize: PAGE_SIZE });
   const [toggleAvailability, { isLoading: toggling }] = useToggleAvailabilityMutation();
   const [assignDelivery, { isLoading: assigning }] = useAssignDeliveryMutation();
+  const [deletePersonnel] = useDeletePersonnelMutation();
 
   const personnel = data?.data?.data ?? [];
   const meta = data?.data?.metaData;
@@ -47,6 +144,23 @@ export default function DeliveriesPage() {
     } catch {
       toast.error("Failed to update availability");
     }
+  }
+
+  function handleDelete(p: TDeliveryPersonnel) {
+    toast(`Remove "${p.fullName ?? "this personnel"}"?`, {
+      action: {
+        label: "Remove",
+        onClick: async () => {
+          try {
+            await deletePersonnel(p.id).unwrap();
+            toast.success("Personnel removed");
+          } catch {
+            toast.error("Failed to remove personnel");
+          }
+        },
+      },
+      cancel: { label: "Cancel", onClick: () => {} },
+    });
   }
 
   async function onAssignSubmit(values: AssignForm) {
@@ -70,12 +184,20 @@ export default function DeliveriesPage() {
             <p className="mt-0.5 text-sm text-gray-500">{meta.totalCount} delivery personnel</p>
           )}
         </div>
-        <button
-          onClick={() => { setShowAssignModal(true); reset(); }}
-          className="flex items-center gap-1.5 rounded-md bg-orange-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-600"
-        >
-          <Plus size={15} /> Assign Delivery
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setEditingPersonnel(null)}
+            className="flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            <Plus size={15} /> Add Personnel
+          </button>
+          <button
+            onClick={() => { setShowAssignModal(true); reset(); }}
+            className="flex items-center gap-1.5 rounded-md bg-orange-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-orange-600"
+          >
+            <Truck size={15} /> Assign Delivery
+          </button>
+        </div>
       </div>
 
       {/* Personnel table */}
@@ -156,7 +278,7 @@ export default function DeliveriesPage() {
                   </td>
 
                   <td className="px-4 py-3">
-                    <div className="flex justify-end">
+                    <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleToggle(p.id, p.fullName)}
                         disabled={toggling}
@@ -167,6 +289,12 @@ export default function DeliveriesPage() {
                           ? <><ToggleRight size={14} className="text-emerald-500" /> Available</>
                           : <><ToggleLeft size={14} className="text-gray-400" /> Unavailable</>
                         }
+                      </button>
+                      <button onClick={() => setEditingPersonnel(p)} className="rounded-lg border border-gray-200 p-1.5 text-gray-500 hover:border-orange-300 hover:text-orange-500">
+                        <Pencil size={13} />
+                      </button>
+                      <button onClick={() => handleDelete(p)} className="rounded-lg border border-gray-200 p-1.5 text-gray-500 hover:border-red-300 hover:text-red-500">
+                        <Trash2 size={13} />
                       </button>
                     </div>
                   </td>
@@ -216,6 +344,11 @@ export default function DeliveriesPage() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Personnel create/edit modal */}
+      {editingPersonnel !== undefined && (
+        <PersonnelModal personnel={editingPersonnel} onClose={() => setEditingPersonnel(undefined)} />
       )}
 
       {/* Assign delivery modal */}
