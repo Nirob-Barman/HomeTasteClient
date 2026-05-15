@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, CreditCard, RotateCcw } from "lucide-react";
+import { ChevronLeft, ChevronRight, CreditCard, RefreshCw, RotateCcw } from "lucide-react";
 import {
   useGetAllPaymentsQuery,
   useRefundPaymentMutation,
@@ -35,11 +35,10 @@ export default function PaymentsPage() {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<TPaymentStatus | undefined>();
 
-  const { data, isLoading, isFetching } = useGetAllPaymentsQuery({
-    pageNumber: page,
-    pageSize: PAGE_SIZE,
-    status: statusFilter,
-  });
+  const { data, isLoading, isFetching, refetch } = useGetAllPaymentsQuery(
+    { pageNumber: page, pageSize: PAGE_SIZE, status: statusFilter },
+    { refetchOnMountOrArgChange: true },
+  );
   const [refundPayment, { isLoading: refunding }] = useRefundPaymentMutation();
 
   const payments = data?.data?.data ?? [];
@@ -58,11 +57,21 @@ export default function PaymentsPage() {
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold text-gray-800">Payments</h1>
-          {meta && (
-            <p className="mt-0.5 text-sm text-gray-500">{meta.totalCount} transactions</p>
-          )}
+        <div className="flex items-center gap-3">
+          <div>
+            <h1 className="text-xl font-bold text-gray-800">Payments</h1>
+            {meta && (
+              <p className="mt-0.5 text-sm text-gray-500">{meta.totalCount} transactions</p>
+            )}
+          </div>
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            title="Refresh"
+            className="rounded-lg border border-gray-200 p-1.5 text-gray-400 hover:border-gray-300 hover:text-gray-600 disabled:opacity-40"
+          >
+            <RefreshCw size={15} className={isFetching ? "animate-spin" : ""} />
+          </button>
         </div>
 
         {/* Status filter */}

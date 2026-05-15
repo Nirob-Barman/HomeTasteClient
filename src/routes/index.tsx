@@ -23,6 +23,7 @@ const CategoriesPage = lazy(() => import("@/pages/admin/CategoriesPage"));
 const InventoryPage = lazy(() => import("@/pages/admin/InventoryPage"));
 const CouponsPage = lazy(() => import("@/pages/admin/CouponsPage"));
 const PaymentsPage = lazy(() => import("@/pages/admin/PaymentsPage"));
+const PaymentGatewayPage = lazy(() => import("@/pages/admin/PaymentGatewayPage"));
 const CustomerDashboard = lazy(
   () => import("@/pages/customer/CustomerDashboard")
 );
@@ -33,6 +34,9 @@ const AddressesPage = lazy(() => import("@/pages/customer/AddressesPage"));
 const LoyaltyPage = lazy(() => import("@/pages/customer/LoyaltyPage"));
 const CustomerSupportPage = lazy(() => import("@/pages/customer/SupportPage"));
 const ReviewsPage = lazy(() => import("@/pages/customer/ReviewsPage"));
+const PaymentCheckoutPage = lazy(() => import("@/pages/payment/PaymentCheckoutPage"));
+const PaymentSuccessPage = lazy(() => import("@/pages/payment/PaymentSuccessPage"));
+const PaymentCancelPage = lazy(() => import("@/pages/payment/PaymentCancelPage"));
 const AssignmentsPage = lazy(() => import("@/pages/delivery/AssignmentsPage"));
 const DeliveryDashboard = lazy(
   () => import("@/pages/delivery/DeliveryDashboard")
@@ -122,6 +126,10 @@ export const router = createBrowserRouter([
                 path: PATHS.ADMIN.PAYMENTS,
                 element: <Wrap><PaymentsPage /></Wrap>,
               },
+              {
+                path: PATHS.ADMIN.PAYMENT_GATEWAY,
+                element: <Wrap><PaymentGatewayPage /></Wrap>,
+              },
             ],
           },
 
@@ -186,6 +194,21 @@ export const router = createBrowserRouter([
               },
             ],
           },
+        ],
+      },
+    ],
+  },
+
+  // Payment fullscreen pages — protected, customer only, no sidebar
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <RoleRoute allowedRoles={[USER_ROLES.CUSTOMER]} />,
+        children: [
+          { path: PATHS.PAYMENT.CHECKOUT, element: <Wrap><PaymentCheckoutPage /></Wrap> },
+          { path: PATHS.PAYMENT.SUCCESS,  element: <Wrap><PaymentSuccessPage /></Wrap> },
+          { path: PATHS.PAYMENT.CANCEL,   element: <Wrap><PaymentCancelPage /></Wrap> },
         ],
       },
     ],

@@ -2,10 +2,12 @@ import { baseApi } from "@/app/baseApi";
 import type { ApiResponse, PaginatedResponse } from "@/types/api";
 import type {
   TPaymentTransaction,
+  TPaymentGateway,
   TPaymentStatus,
   InitiatePaymentRequest,
-  ConfirmPaymentRequest,
   RefundPaymentRequest,
+  CreatePaymentGatewayRequest,
+  UpdatePaymentGatewayRequest,
 } from "@/types/payment";
 
 export const paymentApi = baseApi.injectEndpoints({
@@ -15,16 +17,13 @@ export const paymentApi = baseApi.injectEndpoints({
       invalidatesTags: ["Payment"],
     }),
 
-    confirmPayment: build.mutation<
-      ApiResponse<TPaymentTransaction>,
-      { id: string } & ConfirmPaymentRequest
-    >({
-      query: ({ id, ...body }) => ({
+    confirmPayment: build.mutation<ApiResponse<TPaymentTransaction>, { id: string; transactionRef?: string; notes?: string }>({
+      query: ({ id, transactionRef, notes }) => ({
         url: `/api/payment/${id}/confirm`,
         method: "PATCH",
-        body,
+        body: { ...(transactionRef && { transactionRef }), ...(notes && { notes }) },
       }),
-      invalidatesTags: ["Payment"],
+      invalidatesTags: ["Payment", "Order"],
     }),
 
     refundPayment: build.mutation<
@@ -59,6 +58,42 @@ export const paymentApi = baseApi.injectEndpoints({
       }),
       providesTags: ["Payment"],
     }),
+
+    // Gateway management (admin)
+    getPaymentGateways: build.query<ApiResponse<TPaymentGateway[]>, void>({
+      query: () => "/api/paymentgateway",
+      providesTags: ["PaymentGateway"],
+    }),
+
+    getActivePaymentGateways: build.query<ApiResponse<TPaymentGateway[]>, void>({
+      query: () => "/api/paymentgateway/active",
+      providesTags: ["PaymentGateway"],
+    }),
+
+    getPaymentGatewayById: build.query<ApiResponse<TPaymentGateway>, string>({
+      query: (id) => `/api/paymentgateway/${id}`,
+      providesTags: (_r, _e, id) => [{ type: "PaymentGateway", id }],
+    }),
+
+    createPaymentGateway: build.mutation<ApiResponse<TPaymentGateway>, CreatePaymentGatewayRequest>({
+      query: (body) => ({ url: "/api/paymentgateway", method: "POST", body }),
+      invalidatesTags: ["PaymentGateway"],
+    }),
+
+    updatePaymentGateway: build.mutation<ApiResponse<TPaymentGateway>, { id: string } & UpdatePaymentGatewayRequest>({
+      query: ({ id, ...body }) => ({ url: `/api/paymentgateway/${id}`, method: "PUT", body }),
+      invalidatesTags: ["PaymentGateway"],
+    }),
+
+    togglePaymentGateway: build.mutation<ApiResponse<TPaymentGateway>, string>({
+      query: (id) => ({ url: `/api/paymentgateway/${id}/toggle`, method: "PATCH" }),
+      invalidatesTags: ["PaymentGateway"],
+    }),
+
+    deletePaymentGateway: build.mutation<ApiResponse<boolean>, string>({
+      query: (id) => ({ url: `/api/paymentgateway/${id}`, method: "DELETE" }),
+      invalidatesTags: ["PaymentGateway"],
+    }),
   }),
 });
 
@@ -69,4 +104,11 @@ export const {
   useGetPaymentByOrderQuery,
   useGetPaymentByIdQuery,
   useGetAllPaymentsQuery,
+  useGetPaymentGatewaysQuery,
+  useGetActivePaymentGatewaysQuery,
+  useGetPaymentGatewayByIdQuery,
+  useCreatePaymentGatewayMutation,
+  useUpdatePaymentGatewayMutation,
+  useTogglePaymentGatewayMutation,
+  useDeletePaymentGatewayMutation,
 } = paymentApi;

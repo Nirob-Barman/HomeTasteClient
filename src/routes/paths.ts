@@ -17,6 +17,7 @@ export const PATHS = {
     INVENTORY: "/admin/inventory",
     COUPONS: "/admin/coupons",
     PAYMENTS: "/admin/payments",
+    PAYMENT_GATEWAY: "/admin/payment-gateway",
   },
   CUSTOMER: {
     ROOT: "/customer",
@@ -33,6 +34,11 @@ export const PATHS = {
     ROOT: "/delivery",
     DASHBOARD: "/delivery/dashboard",
     ASSIGNMENTS: "/delivery/assignments",
+  },
+  PAYMENT: {
+    CHECKOUT: "/payment/checkout",
+    SUCCESS: "/payment/success",
+    CANCEL: "/payment/cancel",
   },
   NOT_FOUND: "*",
 } as const;

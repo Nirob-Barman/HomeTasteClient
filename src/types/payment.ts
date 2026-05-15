@@ -33,6 +33,43 @@ export interface TPaymentTransaction {
   paidAt: string | null;
   refundedAt: string | null;
   createdAt: string | null;
+  clientSecret?: string;
+  publishableKey?: string;
+  merchantNumber?: string;
+  redirectUrl?: string;
+}
+
+export interface TPaymentGateway {
+  id: string;
+  name: string;
+  slug: string;
+  gatewayType: string; // "card" | "manual" | "checkout"
+  isConfigured: boolean;
+  publishableKeyHint: string | null; // first 8 chars + "…", admin display only
+  merchantNumber: string | null;     // customer-safe (bKash phone number)
+  isActive: boolean;
+  isSandbox: boolean;
+  createdAt: string | null;
+}
+
+export interface CreatePaymentGatewayRequest {
+  name: string;
+  slug: string;
+  gatewayType: string;
+  publishableKey?: string;
+  secretKey?: string;
+  merchantNumber?: string;
+  isActive: boolean;
+  isSandbox: boolean;
+}
+
+export interface UpdatePaymentGatewayRequest {
+  name: string;
+  publishableKey?: string;
+  secretKey?: string;
+  merchantNumber?: string;
+  isActive: boolean;
+  isSandbox: boolean;
 }
 
 export interface InitiatePaymentRequest {
