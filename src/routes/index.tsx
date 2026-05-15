@@ -30,6 +30,7 @@ const AssignmentsPage = lazy(() => import("@/pages/delivery/AssignmentsPage"));
 const DeliveryDashboard = lazy(
   () => import("@/pages/delivery/DeliveryDashboard")
 );
+const ProfilePage = lazy(() => import("@/pages/shared/ProfilePage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 
 function PageLoader() {
@@ -129,6 +130,12 @@ export const router = createBrowserRouter([
                 element: <Wrap><LoyaltyPage /></Wrap>,
               },
             ],
+          },
+
+          // Shared routes (all authenticated roles)
+          {
+            path: PATHS.PROFILE,
+            element: <Wrap><ProfilePage /></Wrap>,
           },
 
           // Delivery routes

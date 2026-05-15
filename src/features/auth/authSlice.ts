@@ -64,6 +64,10 @@ const authSlice = createSlice({
       state.refreshToken = action.payload.refreshToken;
       saveToStorage({ ...state });
     },
+    updateUser(state, action: PayloadAction<TUserProfile>) {
+      state.user = action.payload;
+      saveToStorage({ ...state });
+    },
     clearCredentials(state) {
       state.user = null;
       state.accessToken = null;
@@ -74,6 +78,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setCredentials, setTokensOnly, updateTokens, clearCredentials } =
+export const { setCredentials, setTokensOnly, updateTokens, updateUser, clearCredentials } =
   authSlice.actions;
 export default authSlice.reducer;

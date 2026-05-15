@@ -5,6 +5,8 @@ import type {
   LoginRequest,
   RegisterRequest,
   RegisterResponse,
+  UpdateProfileRequest,
+  ChangePasswordRequest,
 } from "./types";
 import type { TUserProfile } from "@/types/user";
 import type { ApiResponse } from "@/types/api";
@@ -50,6 +52,14 @@ export const authApi = baseApi.injectEndpoints({
       query: () => ({ url: "/api/auth/refresh-token", method: "POST" }),
     }),
 
+    updateProfile: build.mutation<ApiResponse<TUserProfile>, UpdateProfileRequest>({
+      query: (body) => ({ url: "/api/userprofile", method: "PUT", body }),
+    }),
+
+    changePassword: build.mutation<ApiResponse<null>, ChangePasswordRequest>({
+      query: (body) => ({ url: "/api/userprofile/change-password", method: "POST", body }),
+    }),
+
     logout: build.mutation<ApiResponse<null>, void>({
       query: () => ({ url: "/api/auth/logout", method: "POST" }),
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
@@ -69,5 +79,7 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useGetMeQuery,
+  useUpdateProfileMutation,
+  useChangePasswordMutation,
   useLogoutMutation,
 } = authApi;

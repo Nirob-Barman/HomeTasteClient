@@ -2,6 +2,7 @@ export const PATHS = {
   HOME: "/",
   LOGIN: "/login",
   REGISTER: "/register",
+  PROFILE: "/profile",
   ADMIN: {
     ROOT: "/admin",
     DASHBOARD: "/admin/dashboard",

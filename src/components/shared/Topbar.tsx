@@ -1,5 +1,5 @@
 import { Menu, LogOut, User, ShoppingCart } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useLogoutMutation } from "@/features/auth/authApi";
 import { clearCredentials } from "@/features/auth/authSlice";
@@ -55,21 +55,26 @@ export function Topbar({ onMenuToggle }: TopbarProps) {
             )}
           </button>
         )}
-        <span className="text-sm text-gray-600">
-          {user?.firstName} {user?.lastName}
-        </span>
-
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600">
-          {user?.profileImageUrl ? (
-            <img
-              src={user.profileImageUrl}
-              alt="avatar"
-              className="h-8 w-8 rounded-full object-cover"
-            />
-          ) : (
-            <User size={16} />
-          )}
-        </div>
+        <Link
+          to={PATHS.PROFILE}
+          className="flex items-center gap-2 rounded-lg px-1.5 py-1 hover:bg-gray-100"
+          title="My Profile"
+        >
+          <span className="text-sm text-gray-600">
+            {user?.firstName} {user?.lastName}
+          </span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+            {user?.profileImageUrl ? (
+              <img
+                src={user.profileImageUrl}
+                alt="avatar"
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              <User size={16} />
+            )}
+          </div>
+        </Link>
 
         <button
           onClick={handleLogout}
