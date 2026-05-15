@@ -18,6 +18,11 @@ export const PATHS = {
     COUPONS: "/admin/coupons",
     PAYMENTS: "/admin/payments",
     PAYMENT_GATEWAY: "/admin/payment-gateway",
+    UNITS: "/admin/units",
+    INGREDIENTS: "/admin/ingredients",
+    MEAL_INGREDIENTS: "/admin/meal-ingredients",
+    MEAL_CUSTOMIZATION: "/admin/meal-customization",
+    LOYALTY: "/admin/loyalty",
   },
   CUSTOMER: {
     ROOT: "/customer",

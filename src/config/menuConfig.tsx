@@ -13,6 +13,10 @@ import {
   Star,
   CreditCard,
   Landmark,
+  Ruler,
+  Leaf,
+  Link2,
+  Settings2,
   type LucideIcon,
 } from "lucide-react";
 import { USER_ROLES, type TRole } from "@/constants/roles";
@@ -40,6 +44,11 @@ export const menuConfig: MenuConfig = {
     { label: "Coupons", path: PATHS.ADMIN.COUPONS, icon: Tag },
     { label: "Payments", path: PATHS.ADMIN.PAYMENTS, icon: CreditCard },
     { label: "Payment Gateways", path: PATHS.ADMIN.PAYMENT_GATEWAY, icon: Landmark },
+    { label: "Units", path: PATHS.ADMIN.UNITS, icon: Ruler },
+    { label: "Ingredients", path: PATHS.ADMIN.INGREDIENTS, icon: Leaf },
+    { label: "Meal Ingredients", path: PATHS.ADMIN.MEAL_INGREDIENTS, icon: Link2 },
+    { label: "Customization", path: PATHS.ADMIN.MEAL_CUSTOMIZATION, icon: Settings2 },
+    { label: "Loyalty", path: PATHS.ADMIN.LOYALTY, icon: Gift },
   ],
   [USER_ROLES.CUSTOMER]: [
     {

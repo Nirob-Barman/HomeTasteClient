@@ -24,6 +24,11 @@ const InventoryPage = lazy(() => import("@/pages/admin/InventoryPage"));
 const CouponsPage = lazy(() => import("@/pages/admin/CouponsPage"));
 const PaymentsPage = lazy(() => import("@/pages/admin/PaymentsPage"));
 const PaymentGatewayPage = lazy(() => import("@/pages/admin/PaymentGatewayPage"));
+const UnitsPage = lazy(() => import("@/pages/admin/UnitsPage"));
+const IngredientsPage = lazy(() => import("@/pages/admin/IngredientsPage"));
+const MealIngredientsPage = lazy(() => import("@/pages/admin/MealIngredientsPage"));
+const MealCustomizationPage = lazy(() => import("@/pages/admin/MealCustomizationPage"));
+const AdminLoyaltyPage = lazy(() => import("@/pages/admin/AdminLoyaltyPage"));
 const CustomerDashboard = lazy(
   () => import("@/pages/customer/CustomerDashboard")
 );
@@ -129,6 +134,26 @@ export const router = createBrowserRouter([
               {
                 path: PATHS.ADMIN.PAYMENT_GATEWAY,
                 element: <Wrap><PaymentGatewayPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.UNITS,
+                element: <Wrap><UnitsPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.INGREDIENTS,
+                element: <Wrap><IngredientsPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.MEAL_INGREDIENTS,
+                element: <Wrap><MealIngredientsPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.MEAL_CUSTOMIZATION,
+                element: <Wrap><MealCustomizationPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.LOYALTY,
+                element: <Wrap><AdminLoyaltyPage /></Wrap>,
               },
             ],
           },

@@ -24,6 +24,15 @@ export const loyaltyApi = baseApi.injectEndpoints({
         params: { points },
       }),
     }),
+    // Admin endpoints
+    getAccountByUserId: build.query<ApiResponse<TLoyaltyAccount>, string>({
+      query: (userId) => `/api/loyalty/account/${userId}`,
+      providesTags: ["Loyalty"],
+    }),
+    adjustPoints: build.mutation<ApiResponse<TLoyaltyAccount>, { userId: string; points: number; description?: string }>({
+      query: (body) => ({ url: "/api/loyalty/adjust", method: "POST", body }),
+      invalidatesTags: ["Loyalty"],
+    }),
   }),
 });
 
@@ -31,4 +40,6 @@ export const {
   useGetMyAccountQuery,
   useGetMyTransactionsQuery,
   usePreviewRedemptionQuery,
+  useGetAccountByUserIdQuery,
+  useAdjustPointsMutation,
 } = loyaltyApi;

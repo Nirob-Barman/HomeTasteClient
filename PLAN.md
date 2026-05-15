@@ -90,6 +90,16 @@ src/
 - [x] Deliveries management + assign delivery
 - [x] Analytics dashboard
 - [x] Support tickets
+- [x] Coupons management (create, list, toggle, delete)
+- [x] Categories management
+- [x] Inventory management
+- [x] Payments overview (admin view of all payments)
+- [x] Payment Gateway admin (Stripe/SSLCommerz config) — `src/pages/admin/PaymentGatewayPage.tsx`
+- [x] Units management — `src/pages/admin/UnitsPage.tsx` (`/admin/units`)
+- [x] Ingredients management — `src/pages/admin/IngredientsPage.tsx` (`/admin/ingredients`)
+- [x] Meal–Ingredient mapping — `src/pages/admin/MealIngredientsPage.tsx` (`/admin/meal-ingredients`)
+- [x] Meal Customization options (add-ons/removals/substitutions) — `src/pages/admin/MealCustomizationPage.tsx` (`/admin/meal-customization`)
+- [x] Loyalty admin panel (view account, adjust points) — `src/pages/admin/AdminLoyaltyPage.tsx` (`/admin/loyalty`)
 
 ### Phase 3 — Customer Features
 - [x] Browse meals (`GET /api/meals`)
@@ -147,6 +157,14 @@ Everything else uses RTK Query cache via `useXxxQuery` / `useXxxMutation`. No Re
 | `addressApi` | getAddresses, createAddress, updateAddress, deleteAddress, setDefaultAddress |
 | `adminApi` | getUsers, getUserById, banUser, unbanUser, assignRole, removeRole |
 | `authApi` | login, register, me, logout, refreshToken |
+| `couponsApi` | getCoupons, createCoupon, updateCoupon, toggleCoupon, deleteCoupon |
+| `inventoryApi` | getInventory, updateInventory |
+| `paymentApi` | getAllPayments, getMyPayments, initiatePayment, processRefund |
+| `loyaltyApi` | getMyAccount, getMyTransactions, previewRedemption, getAccountByUserId (admin), adjustPoints (admin) |
+| `unitsApi` | getUnits, createUnit, updateUnit, softDeleteUnit |
+| `ingredientsApi` | getIngredients, createIngredient, updateIngredient, deleteIngredient |
+| `mealIngredientsApi` | getMealIngredients, createMealIngredient, updateMealIngredient, deleteMealIngredient |
+| `mealCustomizationApi` | getCustomizationsByMeal, createCustomization, updateCustomization, deleteCustomization, toggleAvailability |
 
 ---
 
