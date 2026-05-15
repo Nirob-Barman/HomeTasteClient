@@ -24,6 +24,7 @@ export const PATHS = {
     MEAL_CUSTOMIZATION: "/admin/meal-customization",
     LOYALTY: "/admin/loyalty",
     DEPARTMENTS: "/admin/departments",
+    CATEGORY_TYPES: "/admin/category-types",
   },
   CUSTOMER: {
     ROOT: "/customer",

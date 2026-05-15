@@ -30,6 +30,7 @@ const MealIngredientsPage = lazy(() => import("@/pages/admin/MealIngredientsPage
 const MealCustomizationPage = lazy(() => import("@/pages/admin/MealCustomizationPage"));
 const AdminLoyaltyPage = lazy(() => import("@/pages/admin/AdminLoyaltyPage"));
 const DepartmentsPage = lazy(() => import("@/pages/admin/DepartmentsPage"));
+const CategoryTypesPage = lazy(() => import("@/pages/admin/CategoryTypesPage"));
 const CustomerDashboard = lazy(
   () => import("@/pages/customer/CustomerDashboard")
 );
@@ -160,6 +161,10 @@ export const router = createBrowserRouter([
               {
                 path: PATHS.ADMIN.DEPARTMENTS,
                 element: <Wrap><DepartmentsPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.CATEGORY_TYPES,
+                element: <Wrap><CategoryTypesPage /></Wrap>,
               },
             ],
           },
