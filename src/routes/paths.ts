@@ -25,6 +25,7 @@ export const PATHS = {
     LOYALTY: "/admin/loyalty",
     DEPARTMENTS: "/admin/departments",
     CATEGORY_TYPES: "/admin/category-types",
+    TASKS: "/admin/tasks",
   },
   CUSTOMER: {
     ROOT: "/customer",

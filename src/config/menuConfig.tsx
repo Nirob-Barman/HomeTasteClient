@@ -53,6 +53,7 @@ export const menuConfig: MenuConfig = {
     { label: "Loyalty", path: PATHS.ADMIN.LOYALTY, icon: Gift },
     { label: "Departments", path: PATHS.ADMIN.DEPARTMENTS, icon: Building2 },
     { label: "Category Types", path: PATHS.ADMIN.CATEGORY_TYPES, icon: Tags },
+    { label: "Tasks", path: PATHS.ADMIN.TASKS, icon: ClipboardList },
   ],
   [USER_ROLES.CUSTOMER]: [
     {
