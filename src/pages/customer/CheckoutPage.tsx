@@ -4,12 +4,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ShoppingBag, MapPin, Plus, ChevronUp, Tag, X } from "lucide-react";
+import { ShoppingBag, MapPin, Plus, ChevronUp, Tag, X, AlertTriangle } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { clearCart } from "@/features/cart/cartSlice";
 import { usePlaceOrderMutation, useGetDeliveryFeeQuery } from "@/features/orders/ordersApi";
 import { useGetAddressesQuery, useCreateAddressMutation } from "@/features/address/addressApi";
 import { useValidateCouponMutation } from "@/features/coupons/couponsApi";
+import { useCheckServiceabilityQuery } from "@/features/deliveryZones/deliveryZonesApi";
 import { PATHS } from "@/routes/paths";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
@@ -68,6 +69,13 @@ export default function CheckoutPage() {
 
   const effectiveAddressId =
     selectedAddressId ?? addresses.find((a) => a.isDefault)?.id ?? addresses[0]?.id ?? null;
+
+  const { data: serviceData, isLoading: checkingServiceability } = useCheckServiceabilityQuery(
+    effectiveAddressId!,
+    { skip: !effectiveAddressId }
+  );
+  const isServiceable = serviceData?.data?.isServiceable ?? true;
+  const serviceMessage = serviceData?.data?.message;
 
   async function handleSaveAddress(values: AddressForm) {
     try {
@@ -308,6 +316,21 @@ export default function CheckoutPage() {
             )}
           </section>
 
+          {/* Serviceability warning */}
+          {effectiveAddressId && !isServiceable && (
+            <section className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle size={16} className="mt-0.5 shrink-0 text-amber-500" />
+                <div>
+                  <p className="text-sm font-medium text-amber-700">Delivery not available</p>
+                  {serviceMessage && (
+                    <p className="mt-0.5 text-xs text-amber-600">{serviceMessage}</p>
+                  )}
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* Coupon */}
           <section className="rounded-xl border border-gray-200 bg-white p-5">
             <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700">
@@ -417,10 +440,10 @@ export default function CheckoutPage() {
 
             <button
               onClick={handlePlaceOrder}
-              disabled={placing || !effectiveAddressId}
+              disabled={placing || !effectiveAddressId || !isServiceable || checkingServiceability}
               className="mt-5 w-full rounded-lg bg-orange-500 py-3 text-sm font-semibold text-white hover:bg-orange-600 disabled:opacity-50"
             >
-              {placing ? "Placing Order…" : "Place Order"}
+              {placing ? "Placing Order…" : !isServiceable ? "Delivery Unavailable" : "Place Order"}
             </button>
 
             <button

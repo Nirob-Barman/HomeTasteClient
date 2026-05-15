@@ -26,6 +26,7 @@ export const PATHS = {
     DEPARTMENTS: "/admin/departments",
     CATEGORY_TYPES: "/admin/category-types",
     TASKS: "/admin/tasks",
+    DELIVERY_ZONES: "/admin/delivery-zones",
   },
   CUSTOMER: {
     ROOT: "/customer",

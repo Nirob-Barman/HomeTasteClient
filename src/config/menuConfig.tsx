@@ -19,6 +19,7 @@ import {
   Settings2,
   Building2,
   Tags,
+  Globe,
   type LucideIcon,
 } from "lucide-react";
 import { USER_ROLES, type TRole } from "@/constants/roles";
@@ -54,6 +55,7 @@ export const menuConfig: MenuConfig = {
     { label: "Departments", path: PATHS.ADMIN.DEPARTMENTS, icon: Building2 },
     { label: "Category Types", path: PATHS.ADMIN.CATEGORY_TYPES, icon: Tags },
     { label: "Tasks", path: PATHS.ADMIN.TASKS, icon: ClipboardList },
+    { label: "Delivery Zones", path: PATHS.ADMIN.DELIVERY_ZONES, icon: Globe },
   ],
   [USER_ROLES.CUSTOMER]: [
     {

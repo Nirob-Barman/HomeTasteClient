@@ -32,6 +32,7 @@ const AdminLoyaltyPage = lazy(() => import("@/pages/admin/AdminLoyaltyPage"));
 const DepartmentsPage = lazy(() => import("@/pages/admin/DepartmentsPage"));
 const CategoryTypesPage = lazy(() => import("@/pages/admin/CategoryTypesPage"));
 const TasksPage = lazy(() => import("@/pages/admin/TasksPage"));
+const DeliveryZonesPage = lazy(() => import("@/pages/admin/DeliveryZonesPage"));
 const CustomerDashboard = lazy(
   () => import("@/pages/customer/CustomerDashboard")
 );
@@ -170,6 +171,10 @@ export const router = createBrowserRouter([
               {
                 path: PATHS.ADMIN.TASKS,
                 element: <Wrap><TasksPage /></Wrap>,
+              },
+              {
+                path: PATHS.ADMIN.DELIVERY_ZONES,
+                element: <Wrap><DeliveryZonesPage /></Wrap>,
               },
             ],
           },
