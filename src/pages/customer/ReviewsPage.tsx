@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -87,6 +87,9 @@ export default function ReviewsPage() {
   const [submitReview, { isLoading: isSubmitting }] = useSubmitReviewMutation();
   const [updateReview, { isLoading: isUpdating }] = useUpdateReviewMutation();
   const [deleteReview] = useDeleteReviewMutation();
+
+  const submitRating = useWatch({ control: submitForm.control, name: "rating" });
+  const editRating = useWatch({ control: editForm.control, name: "rating" });
 
   const reviews = reviewsData?.data ?? [];
   const meals = mealsData?.data?.data ?? [];
@@ -199,7 +202,7 @@ export default function ReviewsPage() {
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-600">Rating</label>
               <StarRating
-                value={submitForm.watch("rating")}
+                value={submitRating}
                 onChange={(v) => submitForm.setValue("rating", v)}
               />
             </div>
@@ -308,7 +311,7 @@ export default function ReviewsPage() {
               <div>
                 <label className="mb-1 block text-xs font-medium text-gray-600">Rating</label>
                 <StarRating
-                  value={editForm.watch("rating")}
+                  value={editRating}
                   onChange={(v) => editForm.setValue("rating", v)}
                 />
               </div>
