@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
@@ -20,11 +20,11 @@ type AdjustFormData = z.infer<typeof adjustSchema>;
 
 function AdjustModal({ userId, currentPoints, onClose }: { userId: string; currentPoints: number; onClose: () => void }) {
   const [adjust, { isLoading }] = useAdjustPointsMutation();
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<AdjustFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<AdjustFormData>({
     resolver: zodResolver(adjustSchema),
     defaultValues: { points: 0, description: "" },
   });
-  const pts = watch("points") || 0;
+  const pts = useWatch({ control, name: "points" }) ?? 0;
 
   async function onSubmit(data: AdjustFormData) {
     try {

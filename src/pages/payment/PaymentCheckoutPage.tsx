@@ -194,7 +194,7 @@ export default function PaymentCheckoutPage() {
 
       if (tx.redirectUrl) {
         // Redirect-based gateway (e.g. bKash Checkout)
-        window.location.href = tx.redirectUrl;
+        window.location.assign(tx.redirectUrl);
         return;
       }
       if (tx.clientSecret && tx.publishableKey) {
