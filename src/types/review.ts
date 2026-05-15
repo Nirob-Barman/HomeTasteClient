@@ -19,3 +19,8 @@ export interface TUpdateReviewRequest {
   rating?: number;
   feedback?: string;
 }
+
+export interface TAverageRating {
+  averageRating: number;
+  totalReviews: number;
+}

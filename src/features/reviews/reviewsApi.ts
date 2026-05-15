@@ -1,9 +1,19 @@
 import { baseApi } from "@/app/baseApi";
 import type { ApiResponse } from "@/types/api";
-import type { TReview, TSubmitReviewRequest, TUpdateReviewRequest } from "@/types/review";
+import type { TReview, TSubmitReviewRequest, TUpdateReviewRequest, TAverageRating } from "@/types/review";
 
 export const reviewsApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
+    getMealReviews: build.query<ApiResponse<TReview[]>, string>({
+      query: (mealId) => `/api/mealreview/meal/${mealId}`,
+      providesTags: (_r, _e, mealId) => [{ type: "Review", id: mealId }],
+    }),
+
+    getMealAverageRating: build.query<ApiResponse<TAverageRating>, string>({
+      query: (mealId) => `/api/mealreview/${mealId}/average-rating`,
+      providesTags: (_r, _e, mealId) => [{ type: "Review", id: `avg-${mealId}` }],
+    }),
+
     getMyReviews: build.query<ApiResponse<TReview[]>, void>({
       query: () => "/api/mealreview/my-reviews",
       providesTags: ["Review"],
@@ -27,6 +37,8 @@ export const reviewsApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetMealReviewsQuery,
+  useGetMealAverageRatingQuery,
   useGetMyReviewsQuery,
   useSubmitReviewMutation,
   useUpdateReviewMutation,
