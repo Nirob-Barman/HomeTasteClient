@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useGetMyOrdersQuery } from "@/features/orders/ordersApi";
 import { ORDER_STATUS_LABEL, ORDER_STATUS_COLOR, type TOrder } from "@/types/order";
 import { PATHS } from "@/routes/paths";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -208,7 +209,7 @@ export default function CustomerOrdersPage() {
                 <tr key={i}>
                   {Array.from({ length: 5 }).map((_, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 animate-pulse rounded bg-gray-100" />
+                      <Skeleton className="h-4" />
                     </td>
                   ))}
                 </tr>

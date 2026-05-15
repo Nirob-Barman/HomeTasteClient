@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Truck, Star, ToggleLeft, ToggleRight, Plus } from "lucide-react";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -96,7 +97,7 @@ export default function DeliveriesPage() {
                 <tr key={i}>
                   {Array.from({ length: 6 }).map((_, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 animate-pulse rounded bg-gray-100" />
+                      <Skeleton className="h-4" />
                     </td>
                   ))}
                 </tr>

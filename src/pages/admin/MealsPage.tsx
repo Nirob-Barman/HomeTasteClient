@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, ChevronLeft, ChevronRight, Plus, Trash2, X, UtensilsCrossed } from "lucide-react";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -159,7 +160,7 @@ export default function MealsPage() {
                 <tr key={i}>
                   {Array.from({ length: 4 }).map((_, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 animate-pulse rounded bg-gray-100" />
+                      <Skeleton className="h-4" />
                     </td>
                   ))}
                 </tr>

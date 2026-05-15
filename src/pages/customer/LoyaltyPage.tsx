@@ -10,6 +10,7 @@ import {
   type TLoyaltyTransactionType,
 } from "@/types/loyalty";
 import { cn } from "@/utils/cn";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 const PAGE_SIZE = 20;
@@ -45,7 +46,7 @@ export default function LoyaltyPage() {
 
       {/* Account summary */}
       {loadingAccount ? (
-        <div className="h-40 animate-pulse rounded-xl bg-gray-100" />
+        <Skeleton className="h-40 rounded-xl" />
       ) : account ? (
         <div className="rounded-xl border border-gray-200 bg-white p-5">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -157,7 +158,7 @@ export default function LoyaltyPage() {
                   <tr key={i}>
                     {Array.from({ length: 4 }).map((_, j) => (
                       <td key={j} className="px-4 py-3">
-                        <div className="h-4 animate-pulse rounded bg-gray-100" />
+                        <Skeleton className="h-4" />
                       </td>
                     ))}
                   </tr>

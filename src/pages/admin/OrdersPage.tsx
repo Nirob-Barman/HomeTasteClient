@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, ChevronRight as ArrowRight, X } from "lucide-react";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { toast } from "sonner";
 import {
   useGetOrdersQuery,
@@ -135,7 +136,7 @@ export default function OrdersPage() {
                 <tr key={i}>
                   {Array.from({ length: 7 }).map((_, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 animate-pulse rounded bg-gray-100" />
+                      <Skeleton className="h-4" />
                     </td>
                   ))}
                 </tr>

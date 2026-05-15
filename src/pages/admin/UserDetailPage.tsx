@@ -12,6 +12,7 @@ import {
 import { USER_ROLES, type TRole } from "@/constants/roles";
 import { PATHS } from "@/routes/paths";
 import { cn } from "@/utils/cn";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 const ALL_ROLES: TRole[] = [
@@ -110,8 +111,8 @@ export default function UserDetailPage() {
   if (isLoading) {
     return (
       <div className="p-6 space-y-4">
-        <div className="h-5 w-32 animate-pulse rounded bg-gray-100" />
-        <div className="h-48 animate-pulse rounded-lg bg-gray-100" />
+        <Skeleton className="h-5 w-32" />
+        <Skeleton className="h-48 rounded-lg" />
       </div>
     );
   }

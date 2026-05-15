@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
 import { MapPin, Plus, Pencil, Trash2, Star } from "lucide-react";
+import { Skeleton } from "@/components/ui/Skeleton";
 import {
   useGetAddressesQuery,
   useCreateAddressMutation,
@@ -200,7 +201,7 @@ export default function AddressesPage() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-xl bg-gray-100" />
+            <Skeleton key={i} className="h-24 rounded-xl" />
           ))}
         </div>
       ) : addresses.length === 0 ? (

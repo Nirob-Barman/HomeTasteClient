@@ -7,6 +7,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useGetDashboardStatsQuery } from "@/features/analytics/analyticsApi";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -64,7 +65,7 @@ export default function AnalyticsPage() {
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-lg bg-gray-100" />
+            <Skeleton key={i} className="h-24 rounded-lg" />
           ))}
         </div>
       </div>

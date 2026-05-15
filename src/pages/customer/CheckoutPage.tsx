@@ -10,6 +10,7 @@ import { clearCart } from "@/features/cart/cartSlice";
 import { usePlaceOrderMutation } from "@/features/orders/ordersApi";
 import { useGetAddressesQuery, useCreateAddressMutation } from "@/features/address/addressApi";
 import { PATHS } from "@/routes/paths";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -127,7 +128,7 @@ export default function CheckoutPage() {
             {loadingAddresses ? (
               <div className="space-y-2">
                 {[1, 2].map((i) => (
-                  <div key={i} className="h-14 animate-pulse rounded-lg bg-gray-100" />
+                  <Skeleton key={i} className="h-14 rounded-lg" />
                 ))}
               </div>
             ) : addresses.length === 0 && !showNewAddress ? (

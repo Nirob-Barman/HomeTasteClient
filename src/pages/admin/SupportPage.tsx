@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { HeadphonesIcon } from "lucide-react";
+import { Skeleton } from "@/components/ui/Skeleton";
 import {
   useGetAllTicketsQuery,
   useUpdateTicketStatusMutation,
@@ -155,7 +156,7 @@ export default function SupportPage() {
                 <tr key={i}>
                   {Array.from({ length: 5 }).map((_, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 animate-pulse rounded bg-gray-100" />
+                      <Skeleton className="h-4" />
                     </td>
                   ))}
                 </tr>

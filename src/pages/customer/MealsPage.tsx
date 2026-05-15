@@ -3,6 +3,7 @@ import { Search, ShoppingCart, Plus, Minus, ChevronLeft, ChevronRight } from "lu
 import { useGetMealsQuery, useGetCategoriesQuery } from "@/features/meals/mealsApi";
 import { addItem, updateQuantity } from "@/features/cart/cartSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { cn } from "@/utils/cn";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
@@ -134,7 +135,7 @@ export default function CustomerMealsPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-64 animate-pulse rounded-xl bg-gray-100" />
+            <Skeleton key={i} className="h-64 rounded-xl" />
           ))}
         </div>
       ) : visibleMeals.length === 0 ? (

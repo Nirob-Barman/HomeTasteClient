@@ -4,6 +4,7 @@ import { Truck, MapPin, RefreshCw } from "lucide-react";
 import { useGetMyDeliveriesQuery, useUpdateDeliveryStatusMutation, useUpdateLocationMutation } from "@/features/delivery/deliveryApi";
 import { DELIVERY_STATUS, type TDeliveryStatus } from "@/types/delivery";
 import { cn } from "@/utils/cn";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 const STATUS_LABEL: Record<TDeliveryStatus, string> = {
@@ -162,7 +163,7 @@ export default function AssignmentsPage() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-xl bg-gray-100" />
+            <Skeleton key={i} className="h-24 rounded-xl" />
           ))}
         </div>
       ) : assignments.length === 0 ? (
