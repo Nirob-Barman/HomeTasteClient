@@ -8,6 +8,7 @@ export default function PaymentCancelPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const txId = searchParams.get("txId");
+  const orderId = searchParams.get("orderId");
   const reason = searchParams.get("reason");
 
   return (
@@ -32,12 +33,14 @@ export default function PaymentCancelPage() {
           >
             Back to Orders
           </button>
-          <button
-            onClick={() => navigate(-1)}
-            className="w-full rounded-lg border border-gray-200 py-2.5 text-sm text-gray-600 hover:bg-gray-50"
-          >
-            Try Again
-          </button>
+          {orderId && (
+            <button
+              onClick={() => navigate(`${PATHS.PAYMENT.CHECKOUT}?orderId=${orderId}`)}
+              className="w-full rounded-lg border border-gray-200 py-2.5 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              Try Again
+            </button>
+          )}
         </div>
       </div>
     </div>

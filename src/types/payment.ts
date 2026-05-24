@@ -42,32 +42,52 @@ export interface TPaymentTransaction {
 export interface TPaymentGateway {
   id: string;
   name: string;
-  slug: string;
-  gatewayType: string; // "card" | "manual" | "checkout"
+  provider: string;  // family key: "stripe" | "bkash"
+  slug: string;      // variant slug: "stripe_payment_intents" | "bkash_manual" | "bkash_checkout"
   isConfigured: boolean;
-  publishableKeyHint: string | null; // first 8 chars + "…", admin display only
-  merchantNumber: string | null;     // customer-safe (bKash phone number)
+  publishableKeyHint: string | null;
+  merchantNumber: string | null;
   isActive: boolean;
   isSandbox: boolean;
   createdAt: string | null;
 }
 
+// ─── Gateway Schema types (from GET /api/paymentgateway/schema) ──────────────
+
+export interface TGatewayFieldDef {
+  key: string;
+  label: string;
+  isSecret: boolean;
+  isRequired: boolean;
+  placeholder?: string;
+}
+
+export interface TGatewayVariantDef {
+  slug: string;
+  displayName: string;
+  variantLabel: string;
+  fields: TGatewayFieldDef[];
+}
+
+export interface TGatewayFamilyDef {
+  key: string;
+  displayName: string;
+  variants: TGatewayVariantDef[];
+}
+
+// ─── Request types ────────────────────────────────────────────────────────────
+
 export interface CreatePaymentGatewayRequest {
   name: string;
   slug: string;
-  gatewayType: string;
-  publishableKey?: string;
-  secretKey?: string;
-  merchantNumber?: string;
+  config: Record<string, string>;
   isActive: boolean;
   isSandbox: boolean;
 }
 
 export interface UpdatePaymentGatewayRequest {
   name: string;
-  publishableKey?: string;
-  secretKey?: string;
-  merchantNumber?: string;
+  config: Record<string, string>;
   isActive: boolean;
   isSandbox: boolean;
 }
@@ -79,6 +99,13 @@ export interface InitiatePaymentRequest {
 }
 
 export interface ConfirmPaymentRequest {
+  transactionRef?: string;
+  notes?: string;
+}
+
+export interface ConfirmDirectPaymentRequest {
+  orderId: string;
+  gateway: string;
   transactionRef?: string;
   notes?: string;
 }

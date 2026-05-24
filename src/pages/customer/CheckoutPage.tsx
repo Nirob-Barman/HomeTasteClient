@@ -118,7 +118,7 @@ export default function CheckoutPage() {
       return;
     }
     try {
-      await placeOrder({
+      const result = await placeOrder({
         addressId: effectiveAddressId,
         items: cartItems.map((i) => ({ mealId: i.mealId, quantity: i.quantity })),
         couponCode: appliedCoupon?.code,
@@ -126,8 +126,7 @@ export default function CheckoutPage() {
         notes: notes || undefined,
       }).unwrap();
       dispatch(clearCart());
-      toast.success("Order placed successfully!");
-      navigate(PATHS.CUSTOMER.ORDERS);
+      navigate(`${PATHS.PAYMENT.CHECKOUT}?orderId=${result.data?.id}`);
     } catch {
       toast.error("Failed to place order");
     }

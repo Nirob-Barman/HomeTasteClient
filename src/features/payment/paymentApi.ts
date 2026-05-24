@@ -3,8 +3,10 @@ import type { ApiResponse, PaginatedResponse } from "@/types/api";
 import type {
   TPaymentTransaction,
   TPaymentGateway,
+  TGatewayFamilyDef,
   TPaymentStatus,
   InitiatePaymentRequest,
+  ConfirmDirectPaymentRequest,
   RefundPaymentRequest,
   CreatePaymentGatewayRequest,
   UpdatePaymentGatewayRequest,
@@ -23,6 +25,16 @@ export const paymentApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: { ...(transactionRef && { transactionRef }), ...(notes && { notes }) },
       }),
+      invalidatesTags: ["Payment", "Order"],
+    }),
+
+    cancelPayment: build.mutation<ApiResponse<TPaymentTransaction>, string>({
+      query: (id) => ({ url: `/api/payment/${id}/cancel`, method: "PATCH" }),
+      invalidatesTags: ["Payment"],
+    }),
+
+    confirmDirectPayment: build.mutation<ApiResponse<TPaymentTransaction>, ConfirmDirectPaymentRequest>({
+      query: (body) => ({ url: "/api/payment/confirm-direct", method: "POST", body }),
       invalidatesTags: ["Payment", "Order"],
     }),
 
@@ -59,7 +71,12 @@ export const paymentApi = baseApi.injectEndpoints({
       providesTags: ["Payment"],
     }),
 
-    // Gateway management (admin)
+    // ─── Gateway management (admin) ──────────────────────────────────────────
+
+    getPaymentGatewaySchema: build.query<ApiResponse<TGatewayFamilyDef[]>, void>({
+      query: () => "/api/paymentgateway/schema",
+    }),
+
     getPaymentGateways: build.query<ApiResponse<TPaymentGateway[]>, void>({
       query: () => "/api/paymentgateway",
       providesTags: ["PaymentGateway"],
@@ -81,7 +98,7 @@ export const paymentApi = baseApi.injectEndpoints({
     }),
 
     updatePaymentGateway: build.mutation<ApiResponse<TPaymentGateway>, { id: string } & UpdatePaymentGatewayRequest>({
-      query: ({ id, ...body }) => ({ url: `/api/paymentgateway/${id}`, method: "PUT", body }),
+      query: ({ id, ...body }) => ({ url: `/api/paymentgateway/${id}`, method: "PATCH", body }),
       invalidatesTags: ["PaymentGateway"],
     }),
 
@@ -100,10 +117,13 @@ export const paymentApi = baseApi.injectEndpoints({
 export const {
   useInitiatePaymentMutation,
   useConfirmPaymentMutation,
+  useCancelPaymentMutation,
+  useConfirmDirectPaymentMutation,
   useRefundPaymentMutation,
   useGetPaymentByOrderQuery,
   useGetPaymentByIdQuery,
   useGetAllPaymentsQuery,
+  useGetPaymentGatewaySchemaQuery,
   useGetPaymentGatewaysQuery,
   useGetActivePaymentGatewaysQuery,
   useGetPaymentGatewayByIdQuery,

@@ -6,7 +6,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import {
   useInitiatePaymentMutation,
-  useConfirmPaymentMutation,
+  useConfirmDirectPaymentMutation,
   useGetActivePaymentGatewaysQuery,
 } from "@/features/payment/paymentApi";
 import { useGetMyOrderByIdQuery } from "@/features/orders/ordersApi";
@@ -26,21 +26,23 @@ const CARD_OPTIONS = {
 // ─── Stripe card form ────────────────────────────────────────────────────────
 
 function StripeCardForm({
-  transactionId,
+  orderId,
+  gateway,
   clientSecret,
   amount,
   onSuccess,
   onBack,
 }: {
-  transactionId: string;
+  orderId: string;
+  gateway: string;
   clientSecret: string;
   amount: number;
-  onSuccess: () => void;
+  onSuccess: (txId: string) => void;
   onBack: () => void;
 }) {
   const stripe = useStripe();
   const elements = useElements();
-  const [confirmPayment] = useConfirmPaymentMutation();
+  const [confirmDirectPayment] = useConfirmDirectPaymentMutation();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -61,8 +63,8 @@ function StripeCardForm({
 
     if (paymentIntent?.status === "succeeded") {
       try {
-        await confirmPayment({ id: transactionId }).unwrap();
-        onSuccess();
+        const res = await confirmDirectPayment({ orderId, gateway }).unwrap();
+        onSuccess(res.data?.id ?? "");
       } catch {
         toast.error("Payment processed but confirmation failed. Contact support.");
       }
@@ -96,27 +98,29 @@ function StripeCardForm({
 // ─── bKash manual form ────────────────────────────────────────────────────────
 
 function BKashForm({
-  transactionId,
+  orderId,
+  gateway,
   merchantNumber,
   amount,
   onSuccess,
   onBack,
 }: {
-  transactionId: string;
+  orderId: string;
+  gateway: string;
   merchantNumber: string;
   amount: number;
-  onSuccess: () => void;
+  onSuccess: (txId: string) => void;
   onBack: () => void;
 }) {
-  const [confirmPayment, { isLoading }] = useConfirmPaymentMutation();
+  const [confirmDirectPayment, { isLoading }] = useConfirmDirectPaymentMutation();
   const [txnRef, setTxnRef] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!txnRef.trim()) { toast.error("Please enter your bKash Transaction ID"); return; }
     try {
-      await confirmPayment({ id: transactionId, transactionRef: txnRef.trim() }).unwrap();
-      onSuccess();
+      const res = await confirmDirectPayment({ orderId, gateway, transactionRef: txnRef.trim() }).unwrap();
+      onSuccess(res.data?.id ?? "");
     } catch {
       toast.error("Failed to confirm payment. Please try again.");
     }
@@ -155,9 +159,15 @@ function BKashForm({
 
 // ─── Gateway icon ─────────────────────────────────────────────────────────────
 
-function GatewayIcon({ type }: { type: string }) {
-  if (type === "card") return <CreditCard size={20} className="text-blue-500" />;
+function GatewayIcon({ provider }: { provider: string }) {
+  if (provider === "stripe") return <CreditCard size={20} className="text-blue-500" />;
   return <Smartphone size={20} className="text-pink-500" />;
+}
+
+function gatewayDescription(slug: string) {
+  if (slug === "stripe_payment_intents") return "Credit / Debit Card";
+  if (slug === "bkash_checkout") return "Mobile Banking (Redirect)";
+  return "Mobile Banking";
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -177,7 +187,6 @@ export default function PaymentCheckoutPage() {
 
   // Step tracking
   const [selectedGateway, setSelectedGateway] = useState<TPaymentGateway | null>(null);
-  const [transactionId, setTransactionId] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [stripePromise, setStripePromise] = useState<ReturnType<typeof loadStripe> | null>(null);
   const [merchantNumber, setMerchantNumber] = useState<string | null>(null);
@@ -190,10 +199,8 @@ export default function PaymentCheckoutPage() {
       const res = await initiatePayment({ orderId, gateway: gw.slug }).unwrap();
       const tx = res.data;
       if (!tx) return;
-      setTransactionId(tx.id);
 
       if (tx.redirectUrl) {
-        // Redirect-based gateway (e.g. bKash Checkout)
         window.location.assign(tx.redirectUrl);
         return;
       }
@@ -212,13 +219,12 @@ export default function PaymentCheckoutPage() {
   function handleBack() {
     setClientSecret(null);
     setMerchantNumber(null);
-    setTransactionId(null);
     setStripePromise(null);
     setSelectedGateway(null);
   }
 
-  function handleSuccess() {
-    navigate(PATHS.PAYMENT.SUCCESS + `?txId=${transactionId}`);
+  function handleSuccess(txId: string) {
+    navigate(PATHS.PAYMENT.SUCCESS + (txId ? `?txId=${txId}` : ""));
   }
 
   if (!orderId) {
@@ -294,16 +300,10 @@ export default function PaymentCheckoutPage() {
                           : "border-gray-200"
                       )}
                     >
-                      <GatewayIcon type={gw.gatewayType} />
+                      <GatewayIcon provider={gw.provider} />
                       <div className="flex-1">
                         <p className="text-sm font-medium text-gray-800">{gw.name}</p>
-                        <p className="text-xs text-gray-400">
-                          {gw.gatewayType === "card"
-                            ? "Credit / Debit Card"
-                            : gw.gatewayType === "checkout"
-                              ? "Mobile Banking (Redirect)"
-                              : "Mobile Banking"}
-                        </p>
+                        <p className="text-xs text-gray-400">{gatewayDescription(gw.slug)}</p>
                       </div>
                       {gw.isSandbox && (
                         <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-600">
@@ -318,12 +318,13 @@ export default function PaymentCheckoutPage() {
           )}
 
           {/* Step: Stripe card form */}
-          {step === "stripe" && clientSecret && stripePromise && order && (
+          {step === "stripe" && clientSecret && stripePromise && order && selectedGateway && (
             <div>
               <h1 className="mb-4 text-base font-semibold text-gray-800">Pay with card</h1>
               <Elements stripe={stripePromise}>
                 <StripeCardForm
-                  transactionId={transactionId!}
+                  orderId={orderId}
+                  gateway={selectedGateway.slug}
                   clientSecret={clientSecret}
                   amount={order.totalAmount}
                   onSuccess={handleSuccess}
@@ -334,11 +335,12 @@ export default function PaymentCheckoutPage() {
           )}
 
           {/* Step: bKash manual form */}
-          {step === "bkash" && merchantNumber && order && (
+          {step === "bkash" && merchantNumber && order && selectedGateway && (
             <div>
               <h1 className="mb-4 text-base font-semibold text-gray-800">Pay with bKash</h1>
               <BKashForm
-                transactionId={transactionId!}
+                orderId={orderId}
+                gateway={selectedGateway.slug}
                 merchantNumber={merchantNumber}
                 amount={order.totalAmount}
                 onSuccess={handleSuccess}
