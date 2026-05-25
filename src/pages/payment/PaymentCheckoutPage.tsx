@@ -63,7 +63,7 @@ function StripeCardForm({
 
     if (paymentIntent?.status === "succeeded") {
       try {
-        const res = await confirmDirectPayment({ orderId, gateway }).unwrap();
+        const res = await confirmDirectPayment({ orderId, gateway, transactionRef: paymentIntent.id }).unwrap();
         onSuccess(res.data?.id ?? "");
       } catch {
         toast.error("Payment processed but confirmation failed. Contact support.");
